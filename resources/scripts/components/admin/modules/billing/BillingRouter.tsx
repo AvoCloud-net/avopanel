@@ -18,7 +18,6 @@ import SettingsContainer from '@admin/modules/billing/SettingsContainer';
 import BillingExceptionsContainer from './exceptions/BillingExceptionsContainer';
 
 export default () => {
-    const theme = useStoreState(state => state.theme.data!);
     const enabled = useStoreState(state => state.everest.data!.billing.enabled);
 
     if (!enabled) return <EnableBilling />;
@@ -38,7 +37,7 @@ export default () => {
 
             <FlashMessageRender byKey={'admin:billing'} className={'mb-4'} />
 
-            <SubNavigation theme={theme}>
+            <SubNavigation>
                 <SubNavigationLink to={'/admin/billing'} name={'Overview'} base>
                     <DesktopComputerIcon />
                 </SubNavigationLink>
