@@ -57,7 +57,7 @@ export default () => {
                         account: settings.activity.enabled.account,
                         server: settings.activity.enabled.server,
                         admin: settings.activity.enabled.admin,
-                    }
+                    },
                 },
             }}
         >

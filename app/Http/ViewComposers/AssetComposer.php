@@ -30,8 +30,8 @@ class AssetComposer
                     'account' => config('activity.enabled.account', true),
                     'server' => config('activity.enabled.server', true),
                     'admin' => config('activity.enabled.admin', true),
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 }

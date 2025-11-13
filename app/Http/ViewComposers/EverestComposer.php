@@ -59,7 +59,7 @@ class EverestComposer
                 'links' => [
                     'terms' => config('modules.billing.links.terms'),
                     'privacy' => config('modules.billing.links.privacy'),
-                ]
+                ],
             ],
             'alert' => [
                 'enabled' => boolval(config('modules.alert.enabled', false)),

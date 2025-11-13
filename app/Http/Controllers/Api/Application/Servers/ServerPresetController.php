@@ -12,8 +12,8 @@ use Everest\Http\Controllers\Api\Application\ApplicationApiController;
 use Everest\Http\Requests\Api\Application\Servers\Presets\GetServerPresetRequest;
 use Everest\Http\Requests\Api\Application\Servers\Presets\GetServerPresetsRequest;
 use Everest\Http\Requests\Api\Application\Servers\Presets\StoreServerPresetRequest;
-use Everest\Http\Requests\Api\Application\Servers\Presets\UpdateServerPresetRequest;
 use Everest\Http\Requests\Api\Application\Servers\Presets\DeleteServerPresetRequest;
+use Everest\Http\Requests\Api\Application\Servers\Presets\UpdateServerPresetRequest;
 
 class ServerPresetController extends ApplicationApiController
 {

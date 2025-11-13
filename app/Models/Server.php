@@ -406,6 +406,7 @@ class Server extends Model
     {
         if (empty($value) || $value === '0000-00-00') {
             $this->attributes['renewal_date'] = null;
+
             return;
         }
 

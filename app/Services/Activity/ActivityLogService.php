@@ -170,9 +170,15 @@ class ActivityLogService
             $activity->description = $description;
         }
 
-        if ($activity->is_admin && !config('activity.enabled.admin')) return null;
-        if ($activity->actor_type === User::class && !config('activity.enabled.account')) return null;
-        if ($activity->actor_type === Server::class && !config('activity.enabled.server')) return null;
+        if ($activity->is_admin && !config('activity.enabled.admin')) {
+            return null;
+        }
+        if ($activity->actor_type === User::class && !config('activity.enabled.account')) {
+            return null;
+        }
+        if ($activity->actor_type === Server::class && !config('activity.enabled.server')) {
+            return null;
+        }
 
         try {
             return $this->save();

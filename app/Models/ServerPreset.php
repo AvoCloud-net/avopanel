@@ -16,10 +16,8 @@ use Illuminate\Support\Str;
  * @property int $cpu
  * @property int|null $nest_id
  * @property int|null $egg_id
- * 
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * 
  * @property \Everest\Models\Nest $nest
  * @property \Everest\Models\Egg $egg
  */

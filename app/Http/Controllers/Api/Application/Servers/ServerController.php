@@ -2,18 +2,16 @@
 
 namespace Everest\Http\Controllers\Api\Application\Servers;
 
-use Everest\Models\Egg;
 use Everest\Models\Server;
 use Everest\Facades\Activity;
 use Illuminate\Http\Response;
-use Everest\Models\Allocation;
-use Everest\Models\ServerPreset;
 use Illuminate\Http\JsonResponse;
 use Spatie\QueryBuilder\QueryBuilder;
 use Everest\Services\Servers\ServerCreationService;
 use Everest\Services\Servers\ServerDeletionService;
 use Everest\Services\Servers\BuildModificationService;
 use Everest\Services\Servers\DetailsModificationService;
+use Everest\Services\Servers\ServerPresetCreationService;
 use Everest\Transformers\Api\Application\ServerTransformer;
 use Everest\Exceptions\Http\QueryValueOutOfRangeHttpException;
 use Everest\Http\Requests\Api\Application\Servers\GetServerRequest;
@@ -33,6 +31,7 @@ class ServerController extends ApplicationApiController
         private BuildModificationService $buildModificationService,
         private DetailsModificationService $detailsModificationService,
         private ServerCreationService $creationService,
+        private ServerPresetCreationService $presetCreationService,
         private ServerDeletionService $deletionService
     ) {
         parent::__construct();
@@ -94,28 +93,11 @@ class ServerController extends ApplicationApiController
      */
     public function storeWithPreset(StoreServerWithPresetRequest $request): JsonResponse
     {
-        $preset = ServerPreset::findOrFail($request->input('preset_id'));
-        $egg = Egg::findOrFail($preset->egg_id ?? 1);
-        $allocation = Allocation::where('node_id', $request->input('node_id'))->where('server_id', null)->first();
-
-        $data = [
-            'owner_id' => $request->user()->id,
-            'name' => $preset->name . ' server',
-            'node_id' => (int) $request->input('node_id'),
-            'cpu' => (int) $request->input('cpu'),
-            'memory' => (int) $request->input('memory'),
-            'disk' => (int) $request->input('disk'),
-            'nest_id' => $preset->node_id ?? 1,
-            'egg_id' => $preset->egg_id ?? 1,
-            'allocation_id' => $allocation->id,
-            'image' => current($egg->docker_images),
-        ];
-
-        $server = $this->creationService->handle($data);
+        $server = $this->presetCreationService->handle($request->user(), $request->normalize());
 
         Activity::event('admin:servers:create')
             ->property('server', $server)
-            ->property('server_preset', $preset)
+            ->property('server_preset', $request['preset_id'])
             ->description('A server was created via a server preset')
             ->log();
 

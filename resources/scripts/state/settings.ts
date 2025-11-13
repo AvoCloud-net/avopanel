@@ -21,7 +21,7 @@ export interface SiteSettings {
             account: boolean;
             server: boolean;
             admin: boolean;
-        }
+        };
     };
 }
 
