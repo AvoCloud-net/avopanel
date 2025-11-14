@@ -7,13 +7,11 @@ import Select from '@/elements/Select';
 import { ServerPreset } from '@/api/definitions/admin';
 import getNodes, { Node } from '@/api/routes/admin/nodes/getNodes';
 import { Alert } from '@/elements/alert';
-import { useNavigate } from 'react-router-dom';
 import FlashMessageRender from '@/elements/FlashMessageRender';
 import useFlash from '@/plugins/useFlash';
 
 export default () => {
     const { clearFlashes, clearAndAddHttpError } = useFlash();
-    const navigate = useNavigate();
 
     const [selectedPreset, setSelectedPreset] = useState<ServerPreset | null>(null);
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -36,10 +34,11 @@ export default () => {
 
     const submit = () => {
         clearFlashes();
+
         if (!selectedPreset || !selectedNode) return;
 
-        createServerFromPreset(selectedPreset?.id, selectedNode?.id)
-            .then(() => navigate('/admin/servers'))
+        createServerFromPreset(selectedPreset.id, selectedNode.id)
+            .then(() => window.location.reload())
             .catch(error => clearAndAddHttpError({ key: 'admin:servers:create', error }));
     };
 
