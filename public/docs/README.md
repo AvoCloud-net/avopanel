@@ -7,10 +7,9 @@ This directory contains the OpenAPI (formerly Swagger) documentation for the Jex
 ### Core Documentation
 - **[openapi.yaml](openapi.yaml)** - The OpenAPI 3.0 specification file that defines all API endpoints
 - **[index.html](index.html)** - Swagger UI interface for interactive API documentation
-- **[redoc.html](redoc.html)** - ReDoc interface for a clean, three-panel documentation layout
 
-### Guides
-- **[QUICKSTART.md](QUICKSTART.md)** - ⭐ Start here! Quick start guide with examples
+### Guides (for maintainers)
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick start guide with examples
 - **[POSTMAN.md](POSTMAN.md)** - How to use the API with Postman
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guide for maintaining and updating the documentation
 
@@ -22,22 +21,16 @@ This directory contains the OpenAPI (formerly Swagger) documentation for the Jex
 Once your Jexpanel instance is running, you can access the API documentation at:
 
 - **Swagger UI**: `https://your-panel-domain.com/docs/` or `https://your-panel-domain.com/docs/index.html`
-- **ReDoc**: `https://your-panel-domain.com/docs/redoc.html`
-- **Raw OpenAPI Spec**: `https://your-panel-domain.com/docs/openapi.yaml`
 
-**Note**: The OpenAPI specification uses `https://panel.example.com/api` as the default server URL. When testing with Swagger UI, you can change this to your actual panel domain in the "Servers" dropdown at the top of the page.
+**Note**: Only the Swagger UI interface is publicly accessible. All other files in this directory are for maintainers only. The OpenAPI specification uses `https://panel.example.com/api` as the default server URL. When testing with Swagger UI, you can change this to your actual panel domain in the "Servers" dropdown at the top of the page.
 
-## Documentation Viewers
+## Documentation Viewer
 
 ### Swagger UI (index.html)
 - Interactive interface with "Try it out" functionality
 - Allows you to test API endpoints directly from the browser
 - Great for developers who want to experiment with the API
-
-### ReDoc (redoc.html)
-- Clean, three-panel layout
-- Easier to read and navigate for reference
-- Better for documentation consumers
+- Includes complete documentation of 47+ API endpoints
 
 ## API Authentication
 

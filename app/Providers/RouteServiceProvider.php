@@ -36,7 +36,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::middleware('web')->group(function () {
-                // Public API documentation routes (no authentication required)
+                // Public API documentation route (no authentication required)
+                // Only Swagger UI is accessible - redirects /docs/ to /docs/index.html
                 Route::prefix('/docs')->group(function () {
                     Route::get('/', function () {
                         return response()->file(public_path('docs/index.html'));
@@ -44,21 +45,10 @@ class RouteServiceProvider extends ServiceProvider
                     Route::get('/index.html', function () {
                         return response()->file(public_path('docs/index.html'));
                     });
-                    Route::get('/redoc.html', function () {
-                        return response()->file(public_path('docs/redoc.html'));
-                    });
-                    Route::get('/openapi.yaml', function () {
-                        return response()->file(public_path('docs/openapi.yaml'), [
-                            'Content-Type' => 'text/yaml'
-                        ]);
-                    });
-                    Route::get('/{file}', function ($file) {
-                        $path = public_path('docs/' . $file);
-                        if (file_exists($path) && is_file($path)) {
-                            return response()->file($path);
-                        }
+                    // All other /docs/* routes return 404
+                    Route::get('/{any}', function () {
                         abort(404);
-                    })->where('file', '.*');
+                    })->where('any', '.*');
                 });
 
                 Route::middleware(['auth.session', RequireTwoFactorAuthentication::class])
