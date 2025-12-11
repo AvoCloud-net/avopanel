@@ -37,11 +37,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->routes(function () {
             Route::middleware('web')->group(function () {
                 // Public API documentation route (no authentication required)
-                // Only Swagger UI is accessible - redirects /docs/ to /docs/index.html
+                // Only /docs/index.html is accessible
                 Route::prefix('/docs')->group(function () {
-                    Route::get('/', function () {
-                        return response()->file(public_path('docs/index.html'));
-                    });
                     Route::get('/index.html', function () {
                         return response()->file(public_path('docs/index.html'));
                     });

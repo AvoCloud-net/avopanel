@@ -52,7 +52,7 @@ export default () => {
             <FlashMessageRender byKey={'account'} />
             <div css={tw`mb-6`}>
                 <a
-                    href={'/docs'}
+                    href={'/docs/index.html'}
                     target={'_blank'}
                     rel={'noopener noreferrer'}
                     css={tw`px-4 py-2 inline-flex items-center justify-center rounded text-base font-semibold transition-all duration-300 focus:ring-[3px] focus:ring-offset-2 focus:ring-offset-slate-700 focus:ring-opacity-50 text-slate-50 no-underline`}
