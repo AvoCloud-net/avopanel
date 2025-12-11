@@ -1118,3 +1118,90 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  
+  # Application API - Users
+  /application/users:
+    get:
+      tags:
+        - Application - Users
+      summary: List users
+      description: Get all users in the panel
+      operationId: listUsers
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+            maximum: 100
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+  
+  # Application API - Nodes
+  /application/nodes:
+    get:
+      tags:
+        - Application - Nodes
+      summary: List nodes
+      description: Get all nodes in the panel
+      operationId: listNodes
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: List of nodes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Node'
+  
+  /application/nodes/{node}:
+    get:
+      tags:
+        - Application - Nodes
+      summary: Get node details
+      operationId: getNode
+      parameters:
+        - name: node
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Node details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
