@@ -18,7 +18,23 @@ Jexpanel is a modern, high-performance **game server management panel** built on
 - Integrated billing system (Stripe + PayPal)  
 - Clean, user-friendly administrative interface  
 - Built with modern tech: PHP, Laravel, TypeScript, React, Docker  
-- Fully open-source, community-driven  
+- Fully open-source, community-driven
+- **Comprehensive REST API with OpenAPI documentation**
+
+## API Documentation
+
+Jexpanel provides a comprehensive REST API with full OpenAPI 3.0 documentation. Once your panel is running, access the API documentation at:
+
+- **Swagger UI**: `https://your-panel-domain.com/docs/` - Interactive API explorer
+- **ReDoc**: `https://your-panel-domain.com/docs/redoc.html` - Clean documentation layout
+- **OpenAPI Spec**: `https://your-panel-domain.com/docs/openapi.yaml` - Raw specification file
+
+The API documentation covers:
+- **Application API** - Administrative endpoints for managing users, servers, nodes, and billing
+- **Client API** - User-facing endpoints for server management and account settings
+- **Remote API** - Daemon communication endpoints
+
+For more details, see [public/docs/README.md](public/docs/README.md).
 
 ## Useful Links
 
