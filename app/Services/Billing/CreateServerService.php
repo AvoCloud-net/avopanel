@@ -137,21 +137,6 @@ class CreateServerService
     }
 
     /**
-     * Get all environment variables with their default values for an egg.
-     */
-    private function getEnvironmentWithDefaults(int $eggId): array
-    {
-        $variables = [];
-        $defaults = EggVariable::where('egg_id', $eggId)->get();
-
-        foreach ($defaults as $variable) {
-            $variables[$variable->env_variable] = $variable->default_value;
-        }
-
-        return $variables;
-    }
-
-    /**
      * Merge custom environment variables with defaults for an egg.
      * Custom variables take precedence over defaults.
      */
@@ -167,7 +152,7 @@ class CreateServerService
 
         // Override with custom variables
         foreach ($customVariables as $variable) {
-            if (isset($variable['key']) && isset($variable['value'])) {
+            if (is_array($variable) && isset($variable['key']) && isset($variable['value'])) {
                 $variables[$variable['key']] = $variable['value'];
             }
         }
