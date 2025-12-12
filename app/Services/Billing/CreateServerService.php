@@ -36,7 +36,15 @@ class CreateServerService
         $egg = Egg::findOrFail($product->category->egg_id);
 
         $allocation = $this->getAllocation($metadata->node_id, $order->id);
-        $environment = $this->getEnvironmentWithDefaults($egg->id);
+        
+        // Extract custom variables from metadata if available
+        $customVariables = [];
+        if (!empty($metadata->variables)) {
+            $decoded = is_string($metadata->variables) ? json_decode($metadata->variables, true) : $metadata->variables;
+            $customVariables = is_array($decoded) ? $decoded : [];
+        }
+        
+        $environment = $this->getEnvironmentWithCustomVariables($egg->id, $customVariables);
 
         try {
             $server = $this->creation->handle([
@@ -78,12 +86,12 @@ class CreateServerService
     /**
      * Process the creation of a free server.
      */
-    public function processFree(Request $request, Product $product, int $nodeId, Order $order): Server
+    public function processFree(Request $request, Product $product, int $nodeId, Order $order, array $customVariables = []): Server
     {
         $egg = Egg::findOrFail($product->category->egg_id);
 
         $allocation = $this->getAllocation($nodeId, $order->id);
-        $environment = $this->getEnvironmentWithDefaults($egg->id);
+        $environment = $this->getEnvironmentWithCustomVariables($egg->id, $customVariables);
 
         try {
             $server = $this->creation->handle([
@@ -131,6 +139,30 @@ class CreateServerService
 
         foreach ($defaults as $variable) {
             $variables[$variable->env_variable] = $variable->default_value;
+        }
+
+        return $variables;
+    }
+
+    /**
+     * Merge custom environment variables with defaults for an egg.
+     * Custom variables take precedence over defaults.
+     */
+    private function getEnvironmentWithCustomVariables(int $eggId, array $customVariables = []): array
+    {
+        $variables = [];
+        $defaults = EggVariable::where('egg_id', $eggId)->get();
+
+        // Start with defaults
+        foreach ($defaults as $variable) {
+            $variables[$variable->env_variable] = $variable->default_value;
+        }
+
+        // Override with custom variables
+        foreach ($customVariables as $variable) {
+            if (isset($variable['key']) && isset($variable['value'])) {
+                $variables[$variable['key']] = $variable['value'];
+            }
         }
 
         return $variables;
