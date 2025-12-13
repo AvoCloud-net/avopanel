@@ -411,7 +411,8 @@ class Server extends Model
         }
 
         try {
-            $this->attributes['renewal_date'] = Carbon::parse($value)->toDateString();
+            // Store as datetime to preserve time component
+            $this->attributes['renewal_date'] = Carbon::parse($value)->toDateTimeString();
         } catch (\Throwable $e) {
             $this->attributes['renewal_date'] = null;
         }
