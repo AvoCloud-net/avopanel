@@ -12,6 +12,8 @@ import { getCategories, getCategory } from '@/api/routes/admin/billing/categorie
 import { Product } from '@definitions/admin';
 import Spinner from '@/elements/Spinner';
 
+const MB_TO_GB = 1024;
+
 export default ({ server }: { server: Server }) => {
     const [open, setOpen] = useState<boolean>(false);
     const [billable, setBillable] = useState<boolean>(Boolean(server.billingProductId));
@@ -149,7 +151,10 @@ export default ({ server }: { server: Server }) => {
                                     ) : (
                                         <select
                                             value={selectedProductId || ''}
-                                            onChange={e => setSelectedProductId(e.target.value ? Number(e.target.value) : null)}
+                                            onChange={e => {
+                                                const val = parseInt(e.target.value, 10);
+                                                setSelectedProductId(!Number.isNaN(val) && val > 0 ? val : null);
+                                            }}
                                             className={
                                                 'w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded text-sm'
                                             }
@@ -158,13 +163,13 @@ export default ({ server }: { server: Server }) => {
                                             {products.map(product => (
                                                 <option key={product.id} value={product.id}>
                                                     {product.name} - ${product.price}/month ({product.limits.cpu}% CPU,{' '}
-                                                    {(product.limits.memory / 1024).toFixed(1)}GB RAM,{' '}
-                                                    {(product.limits.disk / 1024).toFixed(1)}GB Disk)
+                                                    {(product.limits.memory / MB_TO_GB).toFixed(1)}GB RAM,{' '}
+                                                    {(product.limits.disk / MB_TO_GB).toFixed(1)}GB Disk)
                                                 </option>
                                             ))}
                                         </select>
                                     )}
-                                    {!selectedProductId && (
+                                    {billable && !selectedProductId && (
                                         <p className={'text-red-400 text-sm mt-1'}>
                                             Please select a billing plan to enable billing
                                         </p>
