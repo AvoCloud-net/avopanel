@@ -93,7 +93,18 @@ class EggController extends ApplicationApiController
      */
     public function update(UpdateEggRequest $request, Egg $egg): array
     {
-        $egg->update($request->validated());
+        $data = $request->validated();
+
+        // Handle empty config values - convert empty strings to null or keep existing value
+        // This prevents the frontend from clearing pre-existing config when saving other fields
+        foreach (['config_startup', 'config_files', 'config_stop'] as $field) {
+            if (isset($data[$field]) && $data[$field] === '') {
+                // If the field is an empty string, set it to null instead
+                $data[$field] = null;
+            }
+        }
+
+        $egg->update($data);
 
         Activity::event('admin:eggs:update')
             ->property('egg', $egg)

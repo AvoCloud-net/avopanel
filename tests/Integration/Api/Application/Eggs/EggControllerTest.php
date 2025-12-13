@@ -145,4 +145,33 @@ class EggControllerTest extends ApplicationApiIntegrationTestCase
         $response->assertJsonPath('attributes.name', 'Updated Egg Name');
         $response->assertJsonPath('attributes.description', 'Updated description');
     }
+
+    /**
+     * Test that empty config values are converted to null when updating an egg.
+     * This ensures that empty strings from the frontend don't overwrite existing config values.
+     */
+    public function testUpdateEggWithEmptyConfigValues()
+    {
+        $egg = $this->repository->find(1);
+
+        // Update with empty strings for config fields
+        $response = $this->patchJson('/api/application/eggs/' . $egg->id, [
+            'name' => 'Updated Egg Name',
+            'config_startup' => '',
+            'config_files' => '',
+            'config_stop' => '',
+        ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonPath('object', 'egg');
+        $response->assertJsonPath('attributes.name', 'Updated Egg Name');
+
+        // Verify the egg was updated
+        $updatedEgg = $this->repository->find($egg->id);
+        $this->assertEquals('Updated Egg Name', $updatedEgg->name);
+        // Empty strings should be converted to null
+        $this->assertNull($updatedEgg->config_startup);
+        $this->assertNull($updatedEgg->config_files);
+        $this->assertNull($updatedEgg->config_stop);
+    }
 }
