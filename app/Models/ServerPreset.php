@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property string $uuid
  * @property string $name
- * @property string $description
+ * @property string|null $description
  * @property int $memory
  * @property int $disk
  * @property int $cpu
