@@ -153,7 +153,7 @@ class EggControllerTest extends ApplicationApiIntegrationTestCase
     public function testUpdateEggWithEmptyConfigValues()
     {
         $egg = $this->repository->find(1);
-        
+
         // Store original config values
         $originalConfigStartup = $egg->config_startup;
         $originalConfigFiles = $egg->config_files;

@@ -98,8 +98,8 @@ class EggController extends ApplicationApiController
         // Handle empty config values - remove them from update to preserve existing values
         // This prevents the frontend from clearing pre-existing config when editor returns empty
         foreach (['config_startup', 'config_files', 'config_stop'] as $field) {
-            if (isset($data[$field]) && trim($data[$field]) === '') {
-                // If the field is empty/whitespace only, don't update it (preserve existing value)
+            if (isset($data[$field]) && $data[$field] === '') {
+                // If the field is an empty string, don't update it (preserve existing value)
                 unset($data[$field]);
             }
         }
