@@ -2566,6 +2566,72 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   
+  /client/account/two-factor/disable:
+    post:
+      tags:
+        - Client - Account
+      summary: Disable 2FA
+      description: Disable two-factor authentication
+      operationId: disableTwoFactor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  format: password
+                  description: Current account password
+      responses:
+        '204':
+          description: 2FA disabled successfully
+        '401':
+          description: Unauthorized or incorrect password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /client/account/activity:
+    get:
+      tags:
+        - Client - Account
+      summary: Get account activity
+      description: Get activity logs for the authenticated user
+      operationId: getAccountActivity
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Activity logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ActivityLog'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
   /client/account/api-keys:
     get:
       tags:
@@ -5709,17 +5775,45 @@ paths:
       tags:
         - Client - Server Startup
       summary: Get startup configuration
-      description: Get server startup variables
+      description: Get server startup variables and configuration
       operationId: getStartup
       parameters:
         - name: server
           in: path
           required: true
+          description: Server identifier (UUID)
           schema:
             type: string
       responses:
         '200':
           description: Startup configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: server_startup
+                  attributes:
+                    type: object
+                    properties:
+                      startup_command:
+                        type: string
+                      raw_startup_command:
+                        type: string
+                      docker_images:
+                        type: object
+                      variables:
+                        type: array
+                        items:
+                          type: object
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   /client/servers/{server}/startup/variable:
     put:
@@ -5732,6 +5826,7 @@ paths:
         - name: server
           in: path
           required: true
+          description: Server identifier (UUID)
           schema:
             type: string
       requestBody:
@@ -5740,14 +5835,41 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - key
+                - value
               properties:
                 key:
                   type: string
+                  description: Variable environment key
                 value:
                   type: string
+                  description: New variable value
       responses:
         '200':
-          description: Variable updated
+          description: Variable updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: egg_variable
+                  attributes:
+                    type: object
+        '404':
+          description: Server or variable not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   # Client API - Server Settings
   /client/servers/{server}/settings/rename:
@@ -5761,6 +5883,7 @@ paths:
         - name: server
           in: path
           required: true
+          description: Server identifier (UUID)
           schema:
             type: string
       requestBody:
@@ -5769,29 +5892,103 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - name
               properties:
                 name:
                   type: string
+                  description: New server name
+                  minLength: 1
+                  maxLength: 255
       responses:
         '200':
-          description: Server renamed
+          description: Server renamed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   /client/servers/{server}/settings/reinstall:
     post:
       tags:
         - Client - Server Settings
       summary: Reinstall server
-      description: Trigger a server reinstallation
+      description: Trigger a server reinstallation (this will delete all files)
       operationId: reinstallServer
       parameters:
         - name: server
           in: path
           required: true
+          description: Server identifier (UUID)
           schema:
             type: string
       responses:
         '204':
-          description: Reinstall initiated
+          description: Reinstall initiated successfully
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /client/servers/{server}/settings/docker-image:
+    put:
+      tags:
+        - Client - Server Settings
+      summary: Update Docker image
+      description: Change the server's Docker image
+      operationId: updateDockerImage
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server identifier (UUID)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - docker_image
+              properties:
+                docker_image:
+                  type: string
+                  description: Docker image to use (must be from allowed images)
+      responses:
+        '200':
+          description: Docker image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error (invalid image)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   # Application API - Servers (expanded)
   /application/servers:
