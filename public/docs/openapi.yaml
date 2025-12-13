@@ -365,6 +365,285 @@ components:
             updated_at:
               type: string
               format: date-time
+    
+    Allocation:
+      type: object
+      properties:
+        object:
+          type: string
+          example: allocation
+        attributes:
+          type: object
+          properties:
+            id:
+              type: integer
+            ip:
+              type: string
+            ip_alias:
+              type: string
+              nullable: true
+            port:
+              type: integer
+            notes:
+              type: string
+              nullable: true
+            is_default:
+              type: boolean
+    
+    Database:
+      type: object
+      properties:
+        object:
+          type: string
+          example: server_database
+        attributes:
+          type: object
+          properties:
+            id:
+              type: string
+            host:
+              type: object
+              properties:
+                address:
+                  type: string
+                port:
+                  type: integer
+            name:
+              type: string
+            username:
+              type: string
+            connections_from:
+              type: string
+            max_connections:
+              type: integer
+    
+    Backup:
+      type: object
+      properties:
+        object:
+          type: string
+          example: backup
+        attributes:
+          type: object
+          properties:
+            uuid:
+              type: string
+            is_successful:
+              type: boolean
+            is_locked:
+              type: boolean
+            name:
+              type: string
+            ignored_files:
+              type: string
+            checksum:
+              type: string
+              nullable: true
+            bytes:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+            completed_at:
+              type: string
+              format: date-time
+              nullable: true
+    
+    Schedule:
+      type: object
+      properties:
+        object:
+          type: string
+          example: schedule
+        attributes:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            cron:
+              type: object
+              properties:
+                day_of_week:
+                  type: string
+                day_of_month:
+                  type: string
+                month:
+                  type: string
+                hour:
+                  type: string
+                minute:
+                  type: string
+            is_active:
+              type: boolean
+            is_processing:
+              type: boolean
+            only_when_online:
+              type: boolean
+            last_run_at:
+              type: string
+              format: date-time
+              nullable: true
+            next_run_at:
+              type: string
+              format: date-time
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    
+    Task:
+      type: object
+      properties:
+        object:
+          type: string
+          example: schedule_task
+        attributes:
+          type: object
+          properties:
+            id:
+              type: integer
+            sequence_id:
+              type: integer
+            action:
+              type: string
+            payload:
+              type: string
+            time_offset:
+              type: integer
+            is_queued:
+              type: boolean
+            continue_on_failure:
+              type: boolean
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    
+    Subuser:
+      type: object
+      properties:
+        object:
+          type: string
+          example: subuser
+        attributes:
+          type: object
+          properties:
+            uuid:
+              type: string
+            username:
+              type: string
+            email:
+              type: string
+            image:
+              type: string
+            2fa_enabled:
+              type: boolean
+            created_at:
+              type: string
+              format: date-time
+            permissions:
+              type: array
+              items:
+                type: string
+    
+    Egg:
+      type: object
+      properties:
+        object:
+          type: string
+          example: egg
+        attributes:
+          type: object
+          properties:
+            uuid:
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+            docker_image:
+              type: string
+            docker_images:
+              type: object
+            startup:
+              type: string
+    
+    Location:
+      type: object
+      properties:
+        object:
+          type: string
+          example: location
+        attributes:
+          type: object
+          properties:
+            id:
+              type: integer
+            short:
+              type: string
+            long:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    
+    Nest:
+      type: object
+      properties:
+        object:
+          type: string
+          example: nest
+        attributes:
+          type: object
+          properties:
+            id:
+              type: integer
+            uuid:
+              type: string
+            author:
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    
+    ActivityLog:
+      type: object
+      properties:
+        object:
+          type: string
+          example: activity_log
+        attributes:
+          type: object
+          properties:
+            id:
+              type: string
+            event:
+              type: string
+            ip:
+              type: string
+            description:
+              type: string
+            properties:
+              type: object
+            timestamp:
+              type: string
+              format: date-time
 
 paths:
   # Application API - Overview
@@ -422,6 +701,72 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   
+  # Application API - Activity
+  /application/activity:
+    get:
+      tags:
+        - Application - Overview
+      summary: Get activity logs
+      description: Returns activity logs for admin actions
+      operationId: getActivityLogs
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: List of activity logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ActivityLog'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  # Application API - Permissions
+  /application/permissions:
+    get:
+      tags:
+        - Application - Overview
+      summary: Get admin permissions
+      description: Returns all available admin permissions
+      operationId: getAdminPermissions
+      responses:
+        '200':
+          description: Admin permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  permissions:
+                    type: object
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
   # Application API - Settings
   /application/settings:
     patch:
@@ -439,11 +784,60 @@ paths:
               properties:
                 name:
                   type: string
+                  description: Panel name
                 locale:
                   type: string
+                  description: Default locale
       responses:
         '200':
           description: Settings updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/settings/mode:
+    patch:
+      tags:
+        - Application - Settings
+      summary: Update panel mode
+      description: Update panel operation mode settings
+      operationId: updateMode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                registration:
+                  type: boolean
+                  description: Enable/disable user registration
+      responses:
+        '200':
+          description: Mode updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
         '401':
           description: Unauthorized
           content:
@@ -452,6 +846,90 @@ paths:
                 $ref: '#/components/schemas/Error'
   
   # Application API - Billing Categories
+  /application/billing/analytics:
+    get:
+      tags:
+        - Application - Billing
+      summary: Get billing analytics
+      description: Returns billing analytics and revenue data
+      operationId: getBillingAnalytics
+      responses:
+        '200':
+          description: Billing analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_revenue:
+                    type: number
+                  monthly_revenue:
+                    type: number
+                  total_orders:
+                    type: integer
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/billing/settings:
+    put:
+      tags:
+        - Application - Billing
+      summary: Update billing settings
+      description: Update billing configuration settings
+      operationId: updateBillingSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                currency:
+                  type: string
+                stripe_enabled:
+                  type: boolean
+                paypal_enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: Settings updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/billing/keys:
+    delete:
+      tags:
+        - Application - Billing
+      summary: Reset payment keys
+      description: Reset Stripe and PayPal API keys
+      operationId: resetPaymentKeys
+      responses:
+        '204':
+          description: Keys reset successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
   /application/billing/categories:
     get:
       tags:
@@ -631,6 +1109,279 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  
+  /application/billing/categories/{category}/products:
+    get:
+      tags:
+        - Application - Billing
+      summary: List products in category
+      description: Get all products within a billing category
+      operationId: listProductsInBillingCategory
+      parameters:
+        - name: category
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BillingProduct'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Application - Billing
+      summary: Create product
+      description: Create a new billing product in a category
+      operationId: createBillingProduct
+      parameters:
+        - name: category
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - price
+                - memory
+                - disk
+                - cpu
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                memory:
+                  type: integer
+                disk:
+                  type: integer
+                cpu:
+                  type: integer
+                swap:
+                  type: integer
+                io:
+                  type: integer
+                databases:
+                  type: integer
+                allocations:
+                  type: integer
+                backups:
+                  type: integer
+                nest_id:
+                  type: integer
+                egg_id:
+                  type: integer
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingProduct'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/billing/categories/{category}/products/{product}:
+    get:
+      tags:
+        - Application - Billing
+      summary: Get product details
+      description: Get a specific product within a category
+      operationId: getBillingProduct
+      parameters:
+        - name: category
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+        - name: product
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingProduct'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    patch:
+      tags:
+        - Application - Billing
+      summary: Update product
+      description: Update a billing product
+      operationId: updateBillingProduct
+      parameters:
+        - name: category
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+        - name: product
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                memory:
+                  type: integer
+                disk:
+                  type: integer
+                cpu:
+                  type: integer
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingProduct'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Billing
+      summary: Delete product
+      description: Delete a billing product
+      operationId: deleteBillingProduct
+      parameters:
+        - name: category
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+        - name: product
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Product deleted successfully
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/billing/orders:
+    get:
+      tags:
+        - Application - Billing
+      summary: List orders
+      description: Get all billing orders
+      operationId: listBillingOrders
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        user_id:
+                          type: integer
+                        product_id:
+                          type: integer
+                        amount:
+                          type: number
+                        status:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
   
   # Client API - Account
   /client:
@@ -1165,6 +1916,21 @@ paths:
             type: integer
             default: 50
             maximum: 100
+        - name: filter[email]
+          in: query
+          description: Filter by email
+          schema:
+            type: string
+        - name: filter[username]
+          in: query
+          description: Filter by username
+          schema:
+            type: string
+        - name: filter[uuid]
+          in: query
+          description: Filter by UUID
+          schema:
+            type: string
       responses:
         '200':
           description: List of users
@@ -1180,8 +1946,226 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/User'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Application - Users
+      summary: Create user
+      description: Create a new user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - username
+                - first_name
+                - last_name
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                root_admin:
+                  type: boolean
+                  default: false
+                external_id:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/users/{user}:
+    get:
+      tags:
+        - Application - Users
+      summary: Get user details
+      description: Get detailed information about a specific user
+      operationId: getUser
+      parameters:
+        - name: user
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    patch:
+      tags:
+        - Application - Users
+      summary: Update user
+      description: Update user information
+      operationId: updateUser
+      parameters:
+        - name: user
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                root_admin:
+                  type: boolean
+                language:
+                  type: string
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Users
+      summary: Delete user
+      description: Delete a user
+      operationId: deleteUser
+      parameters:
+        - name: user
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/users/{user}/suspend:
+    post:
+      tags:
+        - Application - Users
+      summary: Toggle user suspension
+      description: Suspend or unsuspend a user account
+      operationId: suspendUser
+      parameters:
+        - name: user
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User suspension toggled successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/users/external/{external_id}:
+    get:
+      tags:
+        - Application - Users
+      summary: Get user by external ID
+      description: Get a user by their external ID
+      operationId: getUserByExternalId
+      parameters:
+        - name: external_id
+          in: path
+          required: true
+          description: External ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   # Application API - Nodes
   /application/nodes:
@@ -1194,9 +2178,16 @@ paths:
       parameters:
         - name: page
           in: query
+          description: Page number for pagination
           schema:
             type: integer
             default: 1
+        - name: per_page
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
       responses:
         '200':
           description: List of nodes
@@ -1205,21 +2196,150 @@ paths:
               schema:
                 type: object
                 properties:
+                  object:
+                    type: string
+                    example: list
                   data:
                     type: array
                     items:
                       $ref: '#/components/schemas/Node'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Application - Nodes
+      summary: Create node
+      description: Create a new node
+      operationId: createNode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - location_id
+                - fqdn
+                - scheme
+                - memory
+                - disk
+                - daemon_base
+                - daemon_listen
+                - daemon_sftp
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                location_id:
+                  type: integer
+                fqdn:
+                  type: string
+                scheme:
+                  type: string
+                  enum: [http, https]
+                behind_proxy:
+                  type: boolean
+                  default: false
+                public:
+                  type: boolean
+                  default: true
+                memory:
+                  type: integer
+                  description: Memory in MB
+                memory_overallocate:
+                  type: integer
+                  default: 0
+                disk:
+                  type: integer
+                  description: Disk in MB
+                disk_overallocate:
+                  type: integer
+                  default: 0
+                upload_size:
+                  type: integer
+                  default: 100
+                daemon_listen:
+                  type: integer
+                  default: 8080
+                daemon_sftp:
+                  type: integer
+                  default: 2022
+                daemon_base:
+                  type: string
+                  default: /var/lib/pterodactyl/volumes
+      responses:
+        '201':
+          description: Node created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
+  /application/nodes/deployable:
+    get:
+      tags:
+        - Application - Nodes
+      summary: Get deployable nodes
+      description: Get nodes that can accept new servers
+      operationId: getDeployableNodes
+      responses:
+        '200':
+          description: List of deployable nodes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Node'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /application/nodes/{node}:
     get:
       tags:
         - Application - Nodes
       summary: Get node details
+      description: Get detailed information about a specific node
       operationId: getNode
       parameters:
         - name: node
           in: path
           required: true
+          description: Node ID
           schema:
             type: integer
       responses:
@@ -1229,6 +2349,347 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Node'
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    patch:
+      tags:
+        - Application - Nodes
+      summary: Update node
+      description: Update a node configuration
+      operationId: updateNode
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                location_id:
+                  type: integer
+                fqdn:
+                  type: string
+                scheme:
+                  type: string
+                  enum: [http, https]
+                memory:
+                  type: integer
+                disk:
+                  type: integer
+                maintenance_mode:
+                  type: boolean
+      responses:
+        '200':
+          description: Node updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Nodes
+      summary: Delete node
+      description: Delete a node
+      operationId: deleteNode
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Node deleted successfully
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/nodes/{node}/configuration:
+    get:
+      tags:
+        - Application - Nodes
+      summary: Get node configuration
+      description: Get daemon configuration for a node
+      operationId: getNodeConfiguration
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Node configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  debug:
+                    type: boolean
+                  uuid:
+                    type: string
+                  token_id:
+                    type: string
+                  token:
+                    type: string
+                  api:
+                    type: object
+                  system:
+                    type: object
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/nodes/{node}/information:
+    get:
+      tags:
+        - Application - Nodes
+      summary: Get node information
+      description: Get system information for a node
+      operationId: getNodeInformation
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Node system information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  system:
+                    type: object
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/nodes/{node}/utilization:
+    get:
+      tags:
+        - Application - Nodes
+      summary: Get node utilization
+      description: Get current resource utilization for a node
+      operationId: getNodeUtilization
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Node utilization data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  memory:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      used:
+                        type: integer
+                  disk:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      used:
+                        type: integer
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/nodes/{node}/allocations:
+    get:
+      tags:
+        - Application - Nodes
+      summary: List node allocations
+      description: Get all allocations for a node
+      operationId: listNodeAllocations
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: List of allocations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Allocation'
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Application - Nodes
+      summary: Create allocations
+      description: Create new allocations for a node
+      operationId: createNodeAllocations
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ip
+                - ports
+              properties:
+                ip:
+                  type: string
+                  description: IP address for the allocations
+                ports:
+                  type: array
+                  items:
+                    type: string
+                  description: List of ports or port ranges (e.g., ["25565", "25566-25570"])
+                ip_alias:
+                  type: string
+                  description: Optional IP alias
+      responses:
+        '201':
+          description: Allocations created successfully
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Nodes
+      summary: Delete all unassigned allocations
+      description: Delete all unassigned allocations for a node
+      operationId: deleteAllNodeAllocations
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Allocations deleted successfully
+        '404':
+          description: Node not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/nodes/{node}/allocations/{allocation}:
+    delete:
+      tags:
+        - Application - Nodes
+      summary: Delete allocation
+      description: Delete a specific allocation
+      operationId: deleteNodeAllocation
+      parameters:
+        - name: node
+          in: path
+          required: true
+          description: Node ID
+          schema:
+            type: integer
+        - name: allocation
+          in: path
+          required: true
+          description: Allocation ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Allocation deleted successfully
+        '404':
+          description: Allocation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   # Client API - Server Groups
   /client/groups:
@@ -1828,9 +3289,53 @@ paths:
           in: query
           schema:
             type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: filter[uuid]
+          in: query
+          description: Filter by UUID
+          schema:
+            type: string
+        - name: filter[name]
+          in: query
+          description: Filter by name
+          schema:
+            type: string
+        - name: filter[owner_id]
+          in: query
+          description: Filter by owner ID
+          schema:
+            type: integer
       responses:
         '200':
           description: List of servers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Server'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       tags:
         - Application - Servers
@@ -1856,26 +3361,225 @@ paths:
               properties:
                 name:
                   type: string
+                  description: Server name
+                description:
+                  type: string
+                  description: Server description
                 user:
                   type: integer
+                  description: User ID who will own the server
                 egg:
                   type: integer
+                  description: Egg ID
                 docker_image:
                   type: string
+                  description: Docker image to use
                 startup:
                   type: string
+                  description: Startup command
                 environment:
                   type: object
+                  description: Environment variables
+                  additionalProperties:
+                    type: string
+                limits:
+                  type: object
+                  required:
+                    - memory
+                    - disk
+                    - cpu
+                  properties:
+                    memory:
+                      type: integer
+                      description: Memory limit in MB
+                    swap:
+                      type: integer
+                      description: Swap limit in MB
+                      default: 0
+                    disk:
+                      type: integer
+                      description: Disk limit in MB
+                    io:
+                      type: integer
+                      description: IO weight
+                      default: 500
+                    cpu:
+                      type: integer
+                      description: CPU limit in %
+                feature_limits:
+                  type: object
+                  properties:
+                    databases:
+                      type: integer
+                      description: Database limit
+                      default: 0
+                    allocations:
+                      type: integer
+                      description: Allocation limit
+                      default: 0
+                    backups:
+                      type: integer
+                      description: Backup limit
+                      default: 0
+                allocation:
+                  type: object
+                  required:
+                    - default
+                  properties:
+                    default:
+                      type: integer
+                      description: Default allocation ID
+                    additional:
+                      type: array
+                      items:
+                        type: integer
+                      description: Additional allocation IDs
+                external_id:
+                  type: string
+                  nullable: true
+                start_on_completion:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Server created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/servers/presets:
+    get:
+      tags:
+        - Application - Servers
+      summary: List server presets
+      description: Get all server presets
+      operationId: listServerPresets
+      responses:
+        '200':
+          description: List of server presets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Application - Servers
+      summary: Create server preset
+      description: Create a new server preset
+      operationId: createServerPreset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                memory:
+                  type: integer
+                disk:
+                  type: integer
+                cpu:
+                  type: integer
+      responses:
+        '201':
+          description: Preset created successfully
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /application/servers/{server}:
+    get:
+      tags:
+        - Application - Servers
+      summary: Get server
+      description: Get server details
+      operationId: getApplicationServer
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Server details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - Application - Servers
+      summary: Update server
+      description: Update server configuration
+      operationId: updateServer
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                user:
+                  type: integer
+                description:
+                  type: string
                 limits:
                   type: object
                   properties:
                     memory:
                       type: integer
-                    swap:
-                      type: integer
                     disk:
-                      type: integer
-                    io:
                       type: integer
                     cpu:
                       type: integer
@@ -1888,41 +3592,32 @@ paths:
                       type: integer
                     backups:
                       type: integer
-                allocation:
-                  type: object
-                  properties:
-                    default:
-                      type: integer
-      responses:
-        '201':
-          description: Server created
-  
-  /application/servers/{server}:
-    get:
-      tags:
-        - Application - Servers
-      summary: Get server
-      description: Get server details
-      operationId: getApplicationServer
-      parameters:
-        - name: server
-          in: path
-          required: true
-          schema:
-            type: integer
       responses:
         '200':
-          description: Server details
-    patch:
+          description: Server updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/servers/{server}/delete:
+    post:
       tags:
         - Application - Servers
-      summary: Update server
-      description: Update server configuration
-      operationId: updateServer
+      summary: Delete server
+      description: Delete a server (with optional force)
+      operationId: deleteServer
       parameters:
         - name: server
           in: path
           required: true
+          description: Server ID
           schema:
             type: integer
       requestBody:
@@ -1931,16 +3626,44 @@ paths:
             schema:
               type: object
               properties:
-                name:
-                  type: string
-                user:
-                  type: integer
-                description:
-                  type: string
+                force:
+                  type: boolean
+                  description: Force delete even if errors occur
+                  default: false
       responses:
-        '200':
-          description: Server updated
+        '204':
+          description: Server deleted successfully
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
+  /application/servers/{server}/toggle:
+    post:
+      tags:
+        - Application - Servers
+      summary: Toggle server visibility
+      description: Toggle server installation status
+      operationId: toggleServer
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Server toggled successfully
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /application/servers/{server}/suspend:
     post:
       tags:
@@ -1952,12 +3675,19 @@ paths:
         - name: server
           in: path
           required: true
+          description: Server ID
           schema:
             type: integer
       responses:
         '204':
-          description: Server suspended
-  
+          description: Server suspended successfully
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /application/servers/{server}/unsuspend:
     post:
       tags:
@@ -1969,11 +3699,263 @@ paths:
         - name: server
           in: path
           required: true
+          description: Server ID
           schema:
             type: integer
       responses:
         '204':
-          description: Server unsuspended
+          description: Server unsuspended successfully
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/servers/{server}/reinstall:
+    post:
+      tags:
+        - Application - Servers
+      summary: Reinstall server
+      description: Trigger server reinstallation
+      operationId: reinstallServerApp
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Reinstall triggered successfully
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/servers/{server}/startup:
+    patch:
+      tags:
+        - Application - Servers
+      summary: Update server startup
+      description: Update server startup configuration
+      operationId: updateServerStartup
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                startup:
+                  type: string
+                environment:
+                  type: object
+                  additionalProperties:
+                    type: string
+                egg:
+                  type: integer
+                image:
+                  type: string
+      responses:
+        '200':
+          description: Startup updated successfully
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/servers/{server}/databases:
+    get:
+      tags:
+        - Application - Servers
+      summary: List server databases
+      description: Get all databases for a server
+      operationId: listServerDatabases
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of databases
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Database'
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Application - Servers
+      summary: Create server database
+      description: Create a new database for a server
+      operationId: createServerDatabase
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - database
+                - remote
+              properties:
+                database:
+                  type: string
+                  description: Database name
+                remote:
+                  type: string
+                  description: Remote connections from (IP or %)
+                  default: '%'
+      responses:
+        '201':
+          description: Database created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/servers/{server}/databases/{database}:
+    get:
+      tags:
+        - Application - Servers
+      summary: Get server database
+      description: Get a specific server database
+      operationId: getServerDatabase
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+        - name: database
+          in: path
+          required: true
+          description: Database ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Database details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '404':
+          description: Database not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Servers
+      summary: Delete server database
+      description: Delete a server database
+      operationId: deleteServerDatabase
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+        - name: database
+          in: path
+          required: true
+          description: Database ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Database deleted successfully
+        '404':
+          description: Database not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/servers/{server}/databases/{database}/reset-password:
+    post:
+      tags:
+        - Application - Servers
+      summary: Reset database password
+      description: Reset the password for a server database
+      operationId: resetDatabasePassword
+      parameters:
+        - name: server
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: integer
+        - name: database
+          in: path
+          required: true
+          description: Database ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  password:
+                    type: string
+        '404':
+          description: Database not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   # Application API - Nests
   /application/nests:
@@ -1983,9 +3965,33 @@ paths:
       summary: List nests
       description: Get all nests
       operationId: listNests
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
       responses:
         '200':
           description: List of nests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Nest'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       tags:
         - Application - Nests & Eggs
@@ -1998,6 +4004,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - name
               properties:
                 name:
                   type: string
@@ -2005,8 +4013,159 @@ paths:
                   type: string
       responses:
         '201':
-          description: Nest created
+          description: Nest created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nest'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
+  /application/nests/{nest}:
+    get:
+      tags:
+        - Application - Nests & Eggs
+      summary: Get nest details
+      description: Get a specific nest
+      operationId: getNest
+      parameters:
+        - name: nest
+          in: path
+          required: true
+          description: Nest ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Nest details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nest'
+        '404':
+          description: Nest not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    patch:
+      tags:
+        - Application - Nests & Eggs
+      summary: Update nest
+      description: Update a nest
+      operationId: updateNest
+      parameters:
+        - name: nest
+          in: path
+          required: true
+          description: Nest ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Nest updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nest'
+        '404':
+          description: Nest not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Nests & Eggs
+      summary: Delete nest
+      description: Delete a nest
+      operationId: deleteNest
+      parameters:
+        - name: nest
+          in: path
+          required: true
+          description: Nest ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Nest deleted successfully
+        '404':
+          description: Nest not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/nests/{nest}/import:
+    post:
+      tags:
+        - Application - Nests & Eggs
+      summary: Import egg into nest
+      description: Import an egg configuration into a nest
+      operationId: importEgg
+      parameters:
+        - name: nest
+          in: path
+          required: true
+          description: Nest ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - egg_data
+              properties:
+                egg_data:
+                  type: object
+                  description: Egg configuration JSON data
+      responses:
+        '201':
+          description: Egg imported successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Egg'
+        '404':
+          description: Nest not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /application/nests/{nest}/eggs:
     get:
       tags:
@@ -2018,11 +4177,325 @@ paths:
         - name: nest
           in: path
           required: true
+          description: Nest ID
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: List of eggs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Egg'
+        '404':
+          description: Nest not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/eggs:
+    post:
+      tags:
+        - Application - Nests & Eggs
+      summary: Create egg
+      description: Create a new egg
+      operationId: createEgg
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nest_id
+                - name
+                - docker_image
+                - startup
+              properties:
+                nest_id:
+                  type: integer
+                name:
+                  type: string
+                description:
+                  type: string
+                docker_image:
+                  type: string
+                startup:
+                  type: string
+      responses:
+        '201':
+          description: Egg created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Egg'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/eggs/{egg}:
+    get:
+      tags:
+        - Application - Nests & Eggs
+      summary: Get egg details
+      description: Get a specific egg
+      operationId: getEgg
+      parameters:
+        - name: egg
+          in: path
+          required: true
+          description: Egg ID
           schema:
             type: integer
       responses:
         '200':
-          description: List of eggs
+          description: Egg details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Egg'
+        '404':
+          description: Egg not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    patch:
+      tags:
+        - Application - Nests & Eggs
+      summary: Update egg
+      description: Update an egg configuration
+      operationId: updateEgg
+      parameters:
+        - name: egg
+          in: path
+          required: true
+          description: Egg ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                docker_image:
+                  type: string
+                startup:
+                  type: string
+      responses:
+        '200':
+          description: Egg updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Egg'
+        '404':
+          description: Egg not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Nests & Eggs
+      summary: Delete egg
+      description: Delete an egg
+      operationId: deleteEgg
+      parameters:
+        - name: egg
+          in: path
+          required: true
+          description: Egg ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Egg deleted successfully
+        '404':
+          description: Egg not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/eggs/{egg}/export:
+    get:
+      tags:
+        - Application - Nests & Eggs
+      summary: Export egg
+      description: Export an egg configuration as JSON
+      operationId: exportEgg
+      parameters:
+        - name: egg
+          in: path
+          required: true
+          description: Egg ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Egg configuration JSON
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  docker_image:
+                    type: string
+        '404':
+          description: Egg not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/eggs/{egg}/variables:
+    post:
+      tags:
+        - Application - Nests & Eggs
+      summary: Create egg variable
+      description: Create a new variable for an egg
+      operationId: createEggVariable
+      parameters:
+        - name: egg
+          in: path
+          required: true
+          description: Egg ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - env_variable
+                - default_value
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                env_variable:
+                  type: string
+                default_value:
+                  type: string
+                user_viewable:
+                  type: boolean
+                user_editable:
+                  type: boolean
+                rules:
+                  type: string
+      responses:
+        '201':
+          description: Variable created successfully
+        '404':
+          description: Egg not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    patch:
+      tags:
+        - Application - Nests & Eggs
+      summary: Update egg variable
+      description: Update an egg variable
+      operationId: updateEggVariable
+      parameters:
+        - name: egg
+          in: path
+          required: true
+          description: Egg ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                env_variable:
+                  type: string
+                default_value:
+                  type: string
+      responses:
+        '200':
+          description: Variable updated successfully
+        '404':
+          description: Egg not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/eggs/{egg}/variables/{variable}:
+    delete:
+      tags:
+        - Application - Nests & Eggs
+      summary: Delete egg variable
+      description: Delete an egg variable
+      operationId: deleteEggVariable
+      parameters:
+        - name: egg
+          in: path
+          required: true
+          description: Egg ID
+          schema:
+            type: integer
+        - name: variable
+          in: path
+          required: true
+          description: Variable ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Variable deleted successfully
+        '404':
+          description: Variable not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   # Application API - Roles
   /application/roles:
@@ -2032,9 +4505,42 @@ paths:
       summary: List roles
       description: Get all roles
       operationId: listRoles
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
       responses:
         '200':
           description: List of roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        sort_id:
+                          type: integer
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       tags:
         - Application - Roles
@@ -2047,6 +4553,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - name
               properties:
                 name:
                   type: string
@@ -2054,7 +4562,192 @@ paths:
                   type: string
       responses:
         '201':
-          description: Role created
+          description: Role created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/roles/permissions:
+    get:
+      tags:
+        - Application - Roles
+      summary: Get available permissions
+      description: Get all available role permissions
+      operationId: getRolePermissions
+      responses:
+        '200':
+          description: List of permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  permissions:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/roles/{role}:
+    get:
+      tags:
+        - Application - Roles
+      summary: Get role details
+      description: Get a specific role
+      operationId: getRole
+      parameters:
+        - name: role
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Role details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  permissions:
+                    type: array
+                    items:
+                      type: string
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    patch:
+      tags:
+        - Application - Roles
+      summary: Update role
+      description: Update a role
+      operationId: updateRole
+      parameters:
+        - name: role
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Role updated successfully
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Roles
+      summary: Delete role
+      description: Delete a role
+      operationId: deleteRole
+      parameters:
+        - name: role
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Role deleted successfully
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/roles/{role}/permissions:
+    patch:
+      tags:
+        - Application - Roles
+      summary: Update role permissions
+      description: Update permissions for a role
+      operationId: updateRolePermissions
+      parameters:
+        - name: role
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - permissions
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of permission keys to assign to the role
+      responses:
+        '200':
+          description: Permissions updated successfully
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   
   # Application API - Locations
   /application/locations:
@@ -2064,9 +4757,33 @@ paths:
       summary: List locations
       description: Get all locations
       operationId: listLocations
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
       responses:
         '200':
           description: List of locations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Location'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       tags:
         - Application - Locations
@@ -2079,11 +4796,123 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - short
+                - long
+              properties:
+                short:
+                  type: string
+                  description: Short code for the location
+                  example: us-east
+                long:
+                  type: string
+                  description: Full location name
+                  example: United States - East Coast
+      responses:
+        '201':
+          description: Location created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /application/locations/{location}:
+    get:
+      tags:
+        - Application - Locations
+      summary: Get location details
+      description: Get a specific location
+      operationId: getLocation
+      parameters:
+        - name: location
+          in: path
+          required: true
+          description: Location ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Location details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: Location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    patch:
+      tags:
+        - Application - Locations
+      summary: Update location
+      description: Update a location
+      operationId: updateLocation
+      parameters:
+        - name: location
+          in: path
+          required: true
+          description: Location ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
               properties:
                 short:
                   type: string
                 long:
                   type: string
       responses:
-        '201':
-          description: Location created
+        '200':
+          description: Location updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: Location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - Application - Locations
+      summary: Delete location
+      description: Delete a location
+      operationId: deleteLocation
+      parameters:
+        - name: location
+          in: path
+          required: true
+          description: Location ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Location deleted successfully
+        '404':
+          description: Location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
