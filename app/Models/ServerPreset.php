@@ -41,7 +41,7 @@ class ServerPreset extends Model
 
     public static array $validationRules = [
         'name' => 'required|string|min:1|max:191',
-        'description' => 'string',
+        'description' => 'nullable|string',
         'memory' => 'required|numeric|min:0',
         'cpu' => 'required|numeric|min:0',
         'disk' => 'required|numeric|min:0',
