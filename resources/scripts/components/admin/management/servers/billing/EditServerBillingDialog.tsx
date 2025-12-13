@@ -34,11 +34,25 @@ export default ({ server }: { server: Server }) => {
             setError(null);
             getCategories()
                 .then(cats => {
+                    console.log('Fetched categories:', cats);
+                    if (cats.length === 0) {
+                        setError('No billing categories found. Please create a category and products first.');
+                        return [];
+                    }
                     // Fetch each category with its products
-                    const promises = cats.map(cat => getCategory(cat.id));
+                    const promises = cats.map(cat => 
+                        getCategory(cat.id)
+                            .then(catWithProducts => {
+                                console.log(`Category ${cat.id} (${cat.name}) products:`, catWithProducts.relationships?.products);
+                                return catWithProducts;
+                            })
+                    );
                     return Promise.all(promises);
                 })
                 .then(categoriesWithProducts => {
+                    if (!categoriesWithProducts || categoriesWithProducts.length === 0) {
+                        return;
+                    }
                     // Flatten all products from all categories
                     const allProducts: Product[] = [];
                     categoriesWithProducts.forEach(cat => {
@@ -46,7 +60,11 @@ export default ({ server }: { server: Server }) => {
                             allProducts.push(...cat.relationships.products);
                         }
                     });
+                    console.log('All products loaded:', allProducts);
                     setProducts(allProducts);
+                    if (allProducts.length === 0) {
+                        setError('No billing products found. Please create products in your billing categories first.');
+                    }
                 })
                 .catch(err => {
                     console.error('Failed to fetch products:', err);
@@ -148,6 +166,10 @@ export default ({ server }: { server: Server }) => {
                                     </div>
                                     {loading ? (
                                         <Spinner size={'small'} />
+                                    ) : products.length === 0 ? (
+                                        <div className={'p-3 bg-yellow-500/10 border border-yellow-500/50 rounded text-yellow-400 text-sm'}>
+                                            No billing products available. Please create products in the billing module first.
+                                        </div>
                                     ) : (
                                         <select
                                             value={selectedProductId || ''}
@@ -169,7 +191,7 @@ export default ({ server }: { server: Server }) => {
                                             ))}
                                         </select>
                                     )}
-                                    {billable && !selectedProductId && (
+                                    {billable && !selectedProductId && products.length > 0 && (
                                         <p className={'text-red-400 text-sm mt-1'}>
                                             Please select a billing plan to enable billing
                                         </p>
