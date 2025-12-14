@@ -24,128 +24,40 @@ export default () => {
     );
     const [loading, setLoading] = useState(false);
 
-    const handleSavePaidRenewalDays = async () => {
+    const handleSaveAll = async () => {
         clearFlashes('admin:billing');
         setLoading(true);
 
         try {
+            // Save all settings in sequence
             await updateSettings('renewal:days', paidRenewalDays);
+            await updateSettings('renewal:free_suspension_days', freeGraceDays);
+            await updateSettings('renewal:paid_suspension_days', paidGraceDays);
+
+            // Update state with all new values
             updateEverest({
                 billing: {
                     ...settings,
                     renewal: {
                         ...settings.renewal,
                         days: paidRenewalDays,
-                    },
-                },
-            });
-            addFlash({
-                key: 'admin:billing',
-                type: 'success',
-                message: 'Paid renewal period updated successfully.',
-            });
-        } catch (error) {
-            console.error(error);
-            addFlash({
-                key: 'admin:billing',
-                type: 'error',
-                message: 'Failed to update paid renewal period.',
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSaveFreeRenewalDays = async () => {
-        clearFlashes('admin:billing');
-        setLoading(true);
-
-        try {
-            await updateSettings('renewal:days', freeRenewalDays);
-            updateEverest({
-                billing: {
-                    ...settings,
-                    renewal: {
-                        ...settings.renewal,
-                        days: freeRenewalDays,
-                    },
-                },
-            });
-            addFlash({
-                key: 'admin:billing',
-                type: 'success',
-                message: 'Free renewal period updated successfully.',
-            });
-        } catch (error) {
-            console.error(error);
-            addFlash({
-                key: 'admin:billing',
-                type: 'error',
-                message: 'Failed to update free renewal period.',
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSaveFreeGraceDays = async () => {
-        clearFlashes('admin:billing');
-        setLoading(true);
-
-        try {
-            await updateSettings('renewal:free_suspension_days', freeGraceDays);
-            updateEverest({
-                billing: {
-                    ...settings,
-                    renewal: {
-                        ...settings.renewal,
                         free_suspension_days: freeGraceDays,
-                    },
-                },
-            });
-            addFlash({
-                key: 'admin:billing',
-                type: 'success',
-                message: 'Free grace period updated successfully.',
-            });
-        } catch (error) {
-            console.error(error);
-            addFlash({
-                key: 'admin:billing',
-                type: 'error',
-                message: 'Failed to update free grace period.',
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSavePaidGraceDays = async () => {
-        clearFlashes('admin:billing');
-        setLoading(true);
-
-        try {
-            await updateSettings('renewal:paid_suspension_days', paidGraceDays);
-            updateEverest({
-                billing: {
-                    ...settings,
-                    renewal: {
-                        ...settings.renewal,
                         paid_suspension_days: paidGraceDays,
                     },
                 },
             });
+
             addFlash({
                 key: 'admin:billing',
                 type: 'success',
-                message: 'Paid grace period updated successfully.',
+                message: 'Renewal settings updated successfully.',
             });
         } catch (error) {
             console.error(error);
             addFlash({
                 key: 'admin:billing',
                 type: 'error',
-                message: 'Failed to update paid grace period.',
+                message: 'Failed to update renewal settings.',
             });
         } finally {
             setLoading(false);
@@ -153,108 +65,98 @@ export default () => {
     };
 
     return (
-        <div className={'grid lg:grid-cols-2 gap-4'}>
-            <FlashMessageRender byKey={'admin:billing'} className={'mb-4 col-span-2'} />
+        <div>
+            <FlashMessageRender byKey={'admin:billing'} className={'mb-4'} />
 
-            <AdminBox title={'Paid Renewal Period (Days)'} icon={faCalendar}>
-                <p className={'text-gray-400 mb-4'}>
-                    Number of days a paid server subscription lasts when purchased or renewed.
-                </p>
-                <div className={'mb-4'}>
-                    <Label>Days</Label>
-                    <Input
-                        type={'number'}
-                        min={1}
-                        max={365}
-                        value={paidRenewalDays}
-                        onChange={e => setPaidRenewalDays(parseInt(e.target.value) || 30)}
-                        disabled={loading}
-                    />
-                    <p className={'text-xs text-gray-500 mt-2'}>
-                        When a paid server is purchased or renewed, it will be active for this many days.
+            <div className={'grid lg:grid-cols-2 gap-4'}>
+                <AdminBox title={'Paid Renewal Period (Days)'} icon={faCalendar}>
+                    <p className={'text-gray-400 mb-4'}>
+                        Number of days a paid server subscription lasts when purchased or renewed.
                     </p>
-                </div>
-                <div className={'text-right'}>
-                    <Button onClick={handleSavePaidRenewalDays} disabled={loading}>
-                        {loading ? 'Saving...' : 'Save'}
-                    </Button>
-                </div>
-            </AdminBox>
+                    <div>
+                        <Label>Days</Label>
+                        <Input
+                            type={'number'}
+                            min={1}
+                            max={365}
+                            value={paidRenewalDays}
+                            onChange={e => setPaidRenewalDays(parseInt(e.target.value) || 30)}
+                            disabled={loading}
+                        />
+                        <p className={'text-xs text-gray-500 mt-2'}>
+                            When a paid server is purchased or renewed, it will be active for this many days.
+                        </p>
+                    </div>
+                </AdminBox>
 
-            <AdminBox title={'Paid Grace Period (Days)'} icon={faClock}>
-                <p className={'text-gray-400 mb-4'}>
-                    Number of days after expiration before a paid server is automatically suspended.
-                </p>
-                <div className={'mb-4'}>
-                    <Label>Days</Label>
-                    <Input
-                        type={'number'}
-                        min={0}
-                        max={90}
-                        value={paidGraceDays}
-                        onChange={e => setPaidGraceDays(parseInt(e.target.value) || 30)}
-                        disabled={loading}
-                    />
-                    <p className={'text-xs text-gray-500 mt-2'}>
-                        Paid servers will be suspended this many days after their renewal date passes.
+                <AdminBox title={'Paid Grace Period (Days)'} icon={faClock}>
+                    <p className={'text-gray-400 mb-4'}>
+                        Number of days after expiration before a paid server is automatically suspended.
                     </p>
-                </div>
-                <div className={'text-right'}>
-                    <Button onClick={handleSavePaidGraceDays} disabled={loading}>
-                        {loading ? 'Saving...' : 'Save'}
-                    </Button>
-                </div>
-            </AdminBox>
+                    <div>
+                        <Label>Days</Label>
+                        <Input
+                            type={'number'}
+                            min={0}
+                            max={90}
+                            value={paidGraceDays}
+                            onChange={e => setPaidGraceDays(parseInt(e.target.value) || 30)}
+                            disabled={loading}
+                        />
+                        <p className={'text-xs text-gray-500 mt-2'}>
+                            Paid servers will be suspended this many days after their renewal date passes.
+                        </p>
+                    </div>
+                </AdminBox>
 
-            <AdminBox title={'Free Renewal Period (Days)'} icon={faCalendar}>
-                <p className={'text-gray-400 mb-4'}>
-                    Number of days a free server subscription lasts when created or renewed.
-                </p>
-                <div className={'mb-4'}>
-                    <Label>Days</Label>
-                    <Input
-                        type={'number'}
-                        min={1}
-                        max={365}
-                        value={freeRenewalDays}
-                        onChange={e => setFreeRenewalDays(parseInt(e.target.value) || 30)}
-                        disabled={loading}
-                    />
-                    <p className={'text-xs text-gray-500 mt-2'}>
-                        When a free server is created or renewed, it will be active for this many days.
+                <AdminBox title={'Free Renewal Period (Days)'} icon={faCalendar}>
+                    <p className={'text-gray-400 mb-4'}>
+                        Number of days a free server subscription lasts when created or renewed.
                     </p>
-                </div>
-                <div className={'text-right'}>
-                    <Button onClick={handleSaveFreeRenewalDays} disabled={loading}>
-                        {loading ? 'Saving...' : 'Save'}
-                    </Button>
-                </div>
-            </AdminBox>
+                    <div>
+                        <Label>Days</Label>
+                        <Input
+                            type={'number'}
+                            min={1}
+                            max={365}
+                            value={freeRenewalDays}
+                            onChange={e => setFreeRenewalDays(parseInt(e.target.value) || 30)}
+                            disabled={loading}
+                        />
+                        <p className={'text-xs text-gray-500 mt-2'}>
+                            When a free server is created or renewed, it will be active for this many days.
+                        </p>
+                    </div>
+                </AdminBox>
 
-            <AdminBox title={'Free Grace Period (Days)'} icon={faClock}>
-                <p className={'text-gray-400 mb-4'}>
-                    Number of days after expiration before a free server is automatically suspended. Free servers can only be renewed before this grace period expires.
-                </p>
-                <div className={'mb-4'}>
-                    <Label>Days</Label>
-                    <Input
-                        type={'number'}
-                        min={0}
-                        max={90}
-                        value={freeGraceDays}
-                        onChange={e => setFreeGraceDays(parseInt(e.target.value) || 7)}
-                        disabled={loading}
-                    />
-                    <p className={'text-xs text-gray-500 mt-2'}>
-                        Free servers will be suspended this many days after their renewal date passes. Self-service renewal is only available during this grace period.
+                <AdminBox title={'Free Grace Period (Days)'} icon={faClock}>
+                    <p className={'text-gray-400 mb-4'}>
+                        Number of days after expiration before a free server is automatically suspended. Free servers
+                        can only be renewed before this grace period expires.
                     </p>
-                </div>
-                <div className={'text-right'}>
-                    <Button onClick={handleSaveFreeGraceDays} disabled={loading}>
-                        {loading ? 'Saving...' : 'Save'}
-                    </Button>
-                </div>
-            </AdminBox>
+                    <div>
+                        <Label>Days</Label>
+                        <Input
+                            type={'number'}
+                            min={0}
+                            max={90}
+                            value={freeGraceDays}
+                            onChange={e => setFreeGraceDays(parseInt(e.target.value) || 7)}
+                            disabled={loading}
+                        />
+                        <p className={'text-xs text-gray-500 mt-2'}>
+                            Free servers will be suspended this many days after their renewal date passes. Self-service
+                            renewal is only available during this grace period.
+                        </p>
+                    </div>
+                </AdminBox>
+            </div>
+
+            <div className={'flex justify-end mt-6'}>
+                <Button onClick={handleSaveAll} disabled={loading}>
+                    {loading ? 'Saving...' : 'Save All Settings'}
+                </Button>
+            </div>
         </div>
     );
 };
