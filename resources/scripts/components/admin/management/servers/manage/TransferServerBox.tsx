@@ -9,7 +9,6 @@ import { useServerFromRoute } from '@/api/routes/admin/server';
 import useFlash from '@/plugins/useFlash';
 import transferServer from '@/api/routes/admin/servers/manage/transferServer';
 import { searchNodes, getAllocations, Node, Allocation } from '@/api/routes/admin/node';
-import Select from '@/elements/Select';
 
 export default () => {
     const { data: server } = useServerFromRoute();
@@ -19,7 +18,7 @@ export default () => {
     const [allocations, setAllocations] = useState<Allocation[]>([]);
     const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
     const [selectedAllocationId, setSelectedAllocationId] = useState<number | null>(null);
-    const { addFlash, clearAndAddHttpError } = useFlash();
+    const { addFlash } = useFlash();
 
     if (!server) return null;
 
@@ -133,7 +132,8 @@ export default () => {
 
                     <div>
                         <label css={tw`block text-sm font-medium mb-2`}>Target Node</label>
-                        <Select
+                        <select
+                            css={tw`shadow-none block p-3 pr-8 rounded border w-full text-sm transition-colors duration-150 ease-linear border-neutral-500 text-neutral-200 bg-neutral-800 outline-none`}
                             value={selectedNodeId?.toString() || ''}
                             onChange={e => setSelectedNodeId(e.target.value ? parseInt(e.target.value) : null)}
                         >
@@ -143,13 +143,14 @@ export default () => {
                                     {node.name} ({node.fqdn})
                                 </option>
                             ))}
-                        </Select>
+                        </select>
                     </div>
 
                     {selectedNodeId && (
                         <div>
                             <label css={tw`block text-sm font-medium mb-2`}>Target Allocation</label>
-                            <Select
+                            <select
+                                css={tw`shadow-none block p-3 pr-8 rounded border w-full text-sm transition-colors duration-150 ease-linear border-neutral-500 text-neutral-200 bg-neutral-800 outline-none disabled:opacity-50`}
                                 value={selectedAllocationId?.toString() || ''}
                                 onChange={e =>
                                     setSelectedAllocationId(e.target.value ? parseInt(e.target.value) : null)
@@ -169,7 +170,7 @@ export default () => {
                                         ))}
                                     </>
                                 )}
-                            </Select>
+                            </select>
                         </div>
                     )}
 
