@@ -167,11 +167,9 @@ const Suspended = ({ date, id, serverId, serverUuid }: { date: Date; id?: number
                                     <>
                                         Your free server has been suspended because the renewal date has passed. To avoid permanent deletion, you must renew within{' '}
                                         <span className={'font-bold'}>7 days of the suspension</span>.
-                                        {daysOverdue >= 0 && (
-                                            <div className={'mt-2 text-yellow-400 font-semibold'}>
-                                                Days overdue: {daysOverdue} / 7
-                                            </div>
-                                        )}
+                                        <div className={'mt-2 text-yellow-400 font-semibold'}>
+                                            Days overdue: {daysOverdue} / 7
+                                        </div>
                                     </>
                                 )}
                             </>
@@ -196,11 +194,9 @@ const Suspended = ({ date, id, serverId, serverUuid }: { date: Date; id?: number
                                                 {product.price}
                                             </span>
                                         </div>
-                                        {daysOverdue >= 0 && (
-                                            <div className={'mt-2 text-yellow-400 font-semibold'}>
-                                                Days overdue: {daysOverdue} / 7
-                                            </div>
-                                        )}
+                                        <div className={'mt-2 text-yellow-400 font-semibold'}>
+                                            Days overdue: {daysOverdue} / 7
+                                        </div>
                                     </>
                                 )}
                             </>
