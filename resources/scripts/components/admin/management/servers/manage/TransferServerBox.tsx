@@ -1,0 +1,207 @@
+import tw from 'twin.macro';
+import { useState, useEffect } from 'react';
+import AdminBox from '@/elements/AdminBox';
+import { Button } from '@/elements/button';
+import { Dialog } from '@/elements/dialog';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExchangeAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { useServerFromRoute } from '@/api/routes/admin/server';
+import useFlash from '@/plugins/useFlash';
+import transferServer from '@/api/routes/admin/servers/manage/transferServer';
+import { searchNodes, getAllocations, Node, Allocation } from '@/api/routes/admin/node';
+import Select from '@/elements/Select';
+
+export default () => {
+    const { data: server } = useServerFromRoute();
+    const [visible, setVisible] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [nodes, setNodes] = useState<Node[]>([]);
+    const [allocations, setAllocations] = useState<Allocation[]>([]);
+    const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
+    const [selectedAllocationId, setSelectedAllocationId] = useState<number | null>(null);
+    const { addFlash, clearAndAddHttpError } = useFlash();
+
+    if (!server) return null;
+
+    useEffect(() => {
+        if (visible) {
+            // Fetch available nodes when dialog opens
+            searchNodes({ filters: {} })
+                .then(fetchedNodes => {
+                    // Filter out the current node
+                    const availableNodes = fetchedNodes.filter(node => node.id !== server.nodeId);
+                    setNodes(availableNodes);
+                })
+                .catch(error => {
+                    clearAndAddHttpError({
+                        key: 'server:manage',
+                        error: `Failed to load nodes: ${error.message}`,
+                    });
+                });
+        }
+    }, [visible]);
+
+    useEffect(() => {
+        if (selectedNodeId) {
+            setLoading(true);
+            // Fetch allocations for the selected node
+            getAllocations(selectedNodeId, 100, { filters: { server_id: 'null' } })
+                .then(fetchedAllocations => {
+                    setAllocations(fetchedAllocations);
+                    // Auto-select first allocation if available
+                    if (fetchedAllocations.length > 0) {
+                        setSelectedAllocationId(fetchedAllocations[0].id);
+                    } else {
+                        setSelectedAllocationId(null);
+                    }
+                    setLoading(false);
+                })
+                .catch(error => {
+                    clearAndAddHttpError({
+                        key: 'server:manage',
+                        error: `Failed to load allocations: ${error.message}`,
+                    });
+                    setLoading(false);
+                });
+        } else {
+            setAllocations([]);
+            setSelectedAllocationId(null);
+        }
+    }, [selectedNodeId]);
+
+    const submit = () => {
+        if (!selectedNodeId || !selectedAllocationId) {
+            addFlash({
+                key: 'server:manage',
+                type: 'error',
+                message: 'Please select both a node and an allocation.',
+            });
+            return;
+        }
+
+        setLoading(true);
+        transferServer(server.id, {
+            node_id: selectedNodeId,
+            allocation_id: selectedAllocationId,
+        })
+            .then(() => {
+                addFlash({
+                    key: 'server:manage',
+                    type: 'success',
+                    message: 'Server transfer has been initiated. This may take several minutes.',
+                });
+                setVisible(false);
+                // Reset form
+                setSelectedNodeId(null);
+                setSelectedAllocationId(null);
+                setNodes([]);
+                setAllocations([]);
+            })
+            .catch(error => {
+                clearAndAddHttpError({
+                    key: 'server:manage',
+                    error: `Failed to initiate transfer: ${error.message}`,
+                });
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
+
+    return (
+        <>
+            <Dialog
+                title={'Transfer Server'}
+                open={visible}
+                onClose={() => {
+                    setVisible(false);
+                    setSelectedNodeId(null);
+                    setSelectedAllocationId(null);
+                    setNodes([]);
+                    setAllocations([]);
+                }}
+            >
+                <div css={tw`space-y-4`}>
+                    <p css={tw`text-sm text-neutral-400`}>
+                        <FontAwesomeIcon icon={faExclamationTriangle} className={'mr-1 text-yellow-500'} />
+                        Transferring a server will move all of its files to a new node. The server will be stopped
+                        during this process and may experience downtime.
+                    </p>
+
+                    <div>
+                        <label css={tw`block text-sm font-medium mb-2`}>Target Node</label>
+                        <Select
+                            value={selectedNodeId?.toString() || ''}
+                            onChange={e => setSelectedNodeId(e.target.value ? parseInt(e.target.value) : null)}
+                        >
+                            <option value="">Select a node...</option>
+                            {nodes.map(node => (
+                                <option key={node.id} value={node.id}>
+                                    {node.name} ({node.fqdn})
+                                </option>
+                            ))}
+                        </Select>
+                    </div>
+
+                    {selectedNodeId && (
+                        <div>
+                            <label css={tw`block text-sm font-medium mb-2`}>Target Allocation</label>
+                            <Select
+                                value={selectedAllocationId?.toString() || ''}
+                                onChange={e =>
+                                    setSelectedAllocationId(e.target.value ? parseInt(e.target.value) : null)
+                                }
+                                disabled={loading || allocations.length === 0}
+                            >
+                                {allocations.length === 0 ? (
+                                    <option value="">No available allocations</option>
+                                ) : (
+                                    <>
+                                        <option value="">Select an allocation...</option>
+                                        {allocations.map(allocation => (
+                                            <option key={allocation.id} value={allocation.id}>
+                                                {allocation.ip}:{allocation.port}
+                                                {allocation.alias ? ` (${allocation.alias})` : ''}
+                                            </option>
+                                        ))}
+                                    </>
+                                )}
+                            </Select>
+                        </div>
+                    )}
+
+                    <div css={tw`flex justify-end space-x-4 mt-6`}>
+                        <Button.Text
+                            onClick={() => {
+                                setVisible(false);
+                                setSelectedNodeId(null);
+                                setSelectedAllocationId(null);
+                                setNodes([]);
+                                setAllocations([]);
+                            }}
+                        >
+                            Cancel
+                        </Button.Text>
+                        <Button.Danger
+                            onClick={submit}
+                            disabled={!selectedNodeId || !selectedAllocationId || loading}
+                        >
+                            {loading ? 'Transferring...' : 'Transfer Server'}
+                        </Button.Danger>
+                    </div>
+                </div>
+            </Dialog>
+            <div css={tw`h-auto flex flex-col`}>
+                <AdminBox icon={faExchangeAlt} title={'Transfer Server'} css={tw`relative w-full`}>
+                    <Button.Primary size={Button.Sizes.Large} css={tw`w-full`} onClick={() => setVisible(true)}>
+                        Transfer Server
+                    </Button.Primary>
+                    <p css={tw`text-xs text-neutral-400 mt-2`}>
+                        Transfer this server to a different node. The server will be stopped and all files will be
+                        migrated.
+                    </p>
+                </AdminBox>
+            </div>
+        </>
+    );
+};
