@@ -44,13 +44,17 @@ export default () => {
     useEffect(() => {
         if (selectedNodeId) {
             setLoading(true);
-            // Fetch allocations for the selected node (limiting to 500 for practical display)
-            getAllocations(selectedNodeId, 500, { filters: { server_id: 'null' } })
+            // Fetch all allocations for the selected node and filter client-side for unassigned ones
+            getAllocations(selectedNodeId, 500)
                 .then(fetchedAllocations => {
-                    setAllocations(fetchedAllocations);
+                    // Filter for allocations that are not assigned to any server
+                    const availableAllocations = fetchedAllocations.filter(
+                        allocation => !allocation.isAssigned && allocation.relationships.server === null
+                    );
+                    setAllocations(availableAllocations);
                     // Auto-select first allocation if available
-                    if (fetchedAllocations.length > 0) {
-                        setSelectedAllocationId(fetchedAllocations[0].id);
+                    if (availableAllocations.length > 0) {
+                        setSelectedAllocationId(availableAllocations[0].id);
                     } else {
                         setSelectedAllocationId(null);
                     }
