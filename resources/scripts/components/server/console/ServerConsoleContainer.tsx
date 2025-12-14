@@ -53,7 +53,7 @@ function ServerConsoleContainer() {
         <PageContentBlock title={'Server Console'} showFlashKey={'console:share'}>
             {showRenewalWarning && (
                 <Alert type={'warning'} className={'mb-4'}>
-                    Your server renewal is due in {daysUntilRenewal} day{daysUntilRenewal !== 1 ? 's' : ''}. Please renew before the renewal date to avoid suspension. After the renewal date passes, you will have 7 days to renew before permanent deletion.
+                    Your server renewal is due in {daysUntilRenewal} day{daysUntilRenewal !== 1 ? 's' : ''}. Please renew before the renewal date to avoid suspension. Your server files and data will be preserved.
                 </Alert>
             )}
             {(isNodeUnderMaintenance || isInstalling || isTransferring) && (

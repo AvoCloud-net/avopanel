@@ -8,7 +8,7 @@ use Everest\Services\Servers\SuspensionService;
 
 class SuspendBillableServersCommand extends Command
 {
-    protected $description = 'An automated task to suspend and delete billable servers.';
+    protected $description = 'An automated task to suspend billable servers with past renewal dates.';
 
     protected $signature = 'p:billing:suspend-billable-servers';
 
@@ -36,12 +36,6 @@ class SuspendBillableServersCommand extends Command
 
             if ($renewalDate->isPast()) {
                 $daysOverdue = $renewalDate->diffInDays($now);
-
-                if ($daysOverdue > 7) {
-                    $this->info("deleting server {$server->id}, overdue by {$daysOverdue} day(s)");
-                    $server->delete();
-                    continue;
-                }
 
                 if (!$server->isSuspended()) {
                     $this->info("suspending server {$server->id}, overdue by {$daysOverdue} day(s)");
