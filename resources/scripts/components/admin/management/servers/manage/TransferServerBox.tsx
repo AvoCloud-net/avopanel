@@ -197,9 +197,9 @@ export default () => {
             </Dialog>
             <div css={tw`h-auto flex flex-col`}>
                 <AdminBox icon={faExchangeAlt} title={'Transfer Server'} css={tw`relative w-full`}>
-                    <Button.Primary size={Button.Sizes.Large} css={tw`w-full`} onClick={() => setVisible(true)}>
+                    <Button size={Button.Sizes.Large} css={tw`w-full`} onClick={() => setVisible(true)}>
                         Transfer Server
-                    </Button.Primary>
+                    </Button>
                     <p css={tw`text-xs text-neutral-400 mt-2`}>
                         Transfer this server to a different node. The server will be stopped and all files will be
                         migrated.
