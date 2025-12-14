@@ -16,9 +16,6 @@ export default () => {
 
     const [paidRenewalDays, setPaidRenewalDays] = useState<number>(settings.renewal?.days || 30);
     const [freeRenewalDays, setFreeRenewalDays] = useState<number>(settings.renewal?.days || 30);
-    const [freeRenewalThreshold, setFreeRenewalThreshold] = useState<number>(
-        settings.renewal?.suspension_threshold || 7
-    );
     const [freeGraceDays, setFreeGraceDays] = useState<number>(
         settings.renewal?.free_suspension_days || 7
     );
@@ -85,38 +82,6 @@ export default () => {
                 key: 'admin:billing',
                 type: 'error',
                 message: 'Failed to update free renewal period.',
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSaveFreeRenewalThreshold = async () => {
-        clearFlashes('admin:billing');
-        setLoading(true);
-
-        try {
-            await updateSettings('renewal:suspension_threshold', freeRenewalThreshold);
-            updateEverest({
-                billing: {
-                    ...settings,
-                    renewal: {
-                        ...settings.renewal,
-                        suspension_threshold: freeRenewalThreshold,
-                    },
-                },
-            });
-            addFlash({
-                key: 'admin:billing',
-                type: 'success',
-                message: 'Free renewal threshold updated successfully.',
-            });
-        } catch (error) {
-            console.error(error);
-            addFlash({
-                key: 'admin:billing',
-                type: 'error',
-                message: 'Failed to update free renewal threshold.',
             });
         } finally {
             setLoading(false);
@@ -268,7 +233,7 @@ export default () => {
 
             <AdminBox title={'Free Grace Period (Days)'} icon={faClock}>
                 <p className={'text-gray-400 mb-4'}>
-                    Number of days after expiration before a free server is automatically suspended.
+                    Number of days after expiration before a free server is automatically suspended. Free servers can only be renewed before this grace period expires.
                 </p>
                 <div className={'mb-4'}>
                     <Label>Days</Label>
@@ -281,7 +246,7 @@ export default () => {
                         disabled={loading}
                     />
                     <p className={'text-xs text-gray-500 mt-2'}>
-                        Free servers will be suspended this many days after their renewal date passes.
+                        Free servers will be suspended this many days after their renewal date passes. Self-service renewal is only available during this grace period.
                     </p>
                 </div>
                 <div className={'text-right'}>
@@ -290,33 +255,6 @@ export default () => {
                     </Button>
                 </div>
             </AdminBox>
-
-            <div className={'col-span-2'}>
-                <AdminBox title={'Free Server Renewal Window'} icon={faClock}>
-                    <p className={'text-gray-400 mb-4'}>
-                        Number of days before expiration when users can renew their free servers. Paid servers can be renewed at any time.
-                    </p>
-                    <div className={'mb-4'}>
-                        <Label>Days Before Expiration</Label>
-                        <Input
-                            type={'number'}
-                            min={0}
-                            max={30}
-                            value={freeRenewalThreshold}
-                            onChange={e => setFreeRenewalThreshold(parseInt(e.target.value) || 7)}
-                            disabled={loading}
-                        />
-                        <p className={'text-xs text-gray-500 mt-2'}>
-                            Free servers can be renewed when there are this many days or fewer remaining until expiration.
-                        </p>
-                    </div>
-                    <div className={'text-right'}>
-                        <Button onClick={handleSaveFreeRenewalThreshold} disabled={loading}>
-                            {loading ? 'Saving...' : 'Save'}
-                        </Button>
-                    </div>
-                </AdminBox>
-            </div>
         </div>
     );
 };

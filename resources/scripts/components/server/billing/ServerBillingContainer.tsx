@@ -51,7 +51,7 @@ export default () => {
 
     // Get configurable renewal settings
     const renewalDays = settings.renewal?.days || 30;
-    const suspensionThreshold = settings.renewal?.suspension_threshold || 7;
+    const freeGraceDays = settings.renewal?.free_suspension_days || 7;
 
     useEffect(() => {
         clearFlashes();
@@ -84,9 +84,12 @@ export default () => {
             });
     };
 
-    // Calculate days remaining until renewal
-    const daysRemaining = renewalDate ? Math.max(0, timeUntil(renewalDate).days) : 0;
-    const canRenew = daysRemaining <= suspensionThreshold;
+    // Calculate days remaining until renewal (can be negative if overdue)
+    const daysRemaining = renewalDate ? timeUntil(renewalDate).days : 0;
+    const daysOverdue = daysRemaining < 0 ? Math.abs(daysRemaining) : 0;
+    
+    // Free servers can only be renewed if they're within the grace period (not suspended)
+    const canRenew = daysOverdue <= freeGraceDays;
 
     return (
         <PageContentBlock
@@ -155,13 +158,11 @@ export default () => {
                             {product.price === 0 ? (
                                 <div>
                                     <p className={'text-gray-400 text-sm mb-4'}>
-                                        This is a free server. You can renew it for another {renewalDays} days when
-                                        there are {suspensionThreshold} days or less remaining.
+                                        This is a free server. You can renew it for another {renewalDays} days as long as it's within the {freeGraceDays}-day grace period after expiration.
                                     </p>
                                     {!canRenew ? (
-                                        <Alert type={'info'}>
-                                            You can renew this server when there are {suspensionThreshold} days or less
-                                            until the renewal date. Currently, you have {daysRemaining} days remaining.
+                                        <Alert type={'danger'}>
+                                            This server has been overdue for more than {freeGraceDays} days and can no longer be renewed through self-service. Please contact support for assistance.
                                         </Alert>
                                     ) : (
                                         <Button
