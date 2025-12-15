@@ -143,9 +143,9 @@ export default () => {
                     <div className={'mb-4'}>
                         <p className={'text-gray-400 text-xs'}>
                             If you renew now, your server will be active for a further {renewalDays} days, making your
-                            next renewal date
-                            <strong className={'ml-1'}>
-                                {renewalDate ? format(addDays(renewalDate, renewalDays), 'do MMMM yyyy') : 'Unknown'}
+                            next renewal date{' '}
+                            <strong>
+                                {format(addDays(new Date(), renewalDays), 'do MMMM yyyy')}
                             </strong>
                             .
                         </p>
