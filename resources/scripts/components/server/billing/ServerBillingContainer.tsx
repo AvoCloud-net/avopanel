@@ -161,7 +161,7 @@ export default () => {
                             {product.price === 0 ? (
                                 <div>
                                     <p className={'text-gray-400 text-sm mb-4'}>
-                                        This is a free server. You can renew it for another {renewalDays} days when within {suspensionThreshold} days of renewal or within the {freeGraceDays}-day grace period after expiration.
+                                        This is a free server. You can renew it for another {renewalDays} days starting {suspensionThreshold} days before it expires, giving you time to renew before expiration. You can also renew within the {freeGraceDays}-day grace period after expiration.
                                     </p>
                                     {daysOverdue > freeGraceDays ? (
                                         <Alert type={'danger'}>
@@ -169,7 +169,7 @@ export default () => {
                                         </Alert>
                                     ) : daysRemaining > suspensionThreshold ? (
                                         <Alert type={'info'}>
-                                            You still have {daysRemaining} days before renewal is required. The renew button will become available when there are {suspensionThreshold} days or fewer remaining.
+                                            You still have {daysRemaining} days before your server expires. The renew button will become available {suspensionThreshold} days before expiration, allowing you to renew in advance.
                                         </Alert>
                                     ) : (
                                         <Button
