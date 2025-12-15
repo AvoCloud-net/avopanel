@@ -33,25 +33,26 @@ interface Props {
 
 function InternalForm({ category, visible, setVisible }: Props) {
     const [egg, setEgg] = useState<WithRelationships<Egg, 'variables'> | undefined>();
-    const { setFieldValue, isSubmitting } = useFormikContext<CategoryValues>();
+    const { setFieldValue, values, isSubmitting } = useFormikContext<CategoryValues>();
     const { secondary } = useStoreState(state => state.theme.data!.colors);
     const lastEggIdRef = useRef<number | undefined>();
 
+    // Load egg object when category.eggId changes (from SWR revalidation after save)
     useEffect(() => {
-        if (category?.eggId) {
+        if (category?.eggId && category.eggId !== egg?.id) {
             getEgg(category.eggId)
                 .then(egg => setEgg(egg))
                 .catch(error => console.error(error));
         }
     }, [category?.eggId]);
 
-    // Sync egg state with formik eggId field
+    // Sync egg state with formik eggId field (when user manually selects different egg)
     useEffect(() => {
-        if (egg?.id !== undefined && egg.id !== lastEggIdRef.current) {
+        if (egg?.id !== undefined && egg.id !== lastEggIdRef.current && egg.id !== values.eggId) {
             lastEggIdRef.current = egg.id;
             setFieldValue('eggId', egg.id);
         }
-    }, [egg, setFieldValue]);
+    }, [egg, setFieldValue, values.eggId]);
 
 
     return (
@@ -165,8 +166,8 @@ export default ({ category }: { category?: Category }) => {
 
         updateCategory(category!.id, values)
             .then(async () => {
-                // Revalidate the SWR cache to fetch updated category data
-                await mutate(`/api/application/billing/categories/${params.id}`);
+                // Revalidate the SWR cache to fetch updated category data and wait for it to complete
+                await mutate(`/api/application/billing/categories/${params.id}`, undefined, { revalidate: true });
             })
             .catch(error => {
                 clearAndAddHttpError({ key: 'admin:billing:category:create', error });
