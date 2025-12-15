@@ -149,16 +149,6 @@ export default () => {
                         </Alert>
                     ) : (
                         <>
-                            <div className={'mb-4'}>
-                                <p className={'text-gray-400 text-xs'}>
-                                    If you renew now, your server will be active for a further {product.price === 0 ? freeRenewalDays : renewalDays} days, making your
-                                    next renewal date{' '}
-                                    <strong>
-                                        {format(addDays(new Date(), product.price === 0 ? freeRenewalDays : renewalDays), 'do MMMM yyyy')}
-                                    </strong>
-                                    .
-                                </p>
-                            </div>
                             {product.price === 0 ? (
                                 <div>
                                     <p className={'text-gray-400 text-sm mb-4'}>
