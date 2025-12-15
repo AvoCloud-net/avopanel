@@ -87,15 +87,6 @@ class CategoryController extends ApplicationApiController
     {
         $egg = Egg::query()->findOrFail($request->input('eggId'));
 
-        \Log::info('CategoryController@update - Before update', [
-            'category_id' => $category->id,
-            'current_egg_id' => $category->egg_id,
-            'current_nest_id' => $category->nest_id,
-            'new_egg_id' => $egg->id,
-            'new_nest_id' => $egg->nest_id,
-            'request_eggId' => $request->input('eggId'),
-        ]);
-
         try {
             $category->updateOrFail([
                 'name' => $request->input('name'),
@@ -106,21 +97,8 @@ class CategoryController extends ApplicationApiController
                 'egg_id' => $egg->id,
             ]);
         } catch (\Exception $ex) {
-            \Log::error('CategoryController@update - Update failed', [
-                'error' => $ex->getMessage(),
-                'category_id' => $category->id,
-            ]);
             throw new \Exception('Failed to update a product category: ' . $ex->getMessage());
         }
-
-        // Refresh the model to get the updated values
-        $category->refresh();
-
-        \Log::info('CategoryController@update - After update', [
-            'category_id' => $category->id,
-            'updated_egg_id' => $category->egg_id,
-            'updated_nest_id' => $category->nest_id,
-        ]);
 
         Activity::event('admin:billing:categories:update')
             ->property('category', $category)

@@ -38,12 +38,12 @@ function InternalForm({ category, visible, setVisible }: Props) {
     const lastEggIdRef = useRef<number | undefined>();
 
     useEffect(() => {
-        if (category) {
-            getEgg(category!.eggId)
+        if (category?.eggId) {
+            getEgg(category.eggId)
                 .then(egg => setEgg(egg))
                 .catch(error => console.error(error));
         }
-    }, [category]);
+    }, [category?.eggId]);
 
     // Sync egg state with formik eggId field
     useEffect(() => {
