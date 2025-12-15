@@ -14,7 +14,7 @@ import { object, string, boolean, number } from 'yup';
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from '@/state/hooks';
 import Label from '@/elements/Label';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState, useRef } from 'react';
 import { ServerServiceContainer } from '@admin/management/servers/ServerStartupContainer';
 import { WithRelationships } from '@/api/routes/admin';
 import type { Egg } from '@/api/routes/admin/egg';
@@ -33,8 +33,9 @@ interface Props {
 
 function InternalForm({ category, visible, setVisible }: Props) {
     const [egg, setEgg] = useState<WithRelationships<Egg, 'variables'> | undefined>();
-    const { setFieldValue, values, isSubmitting } = useFormikContext<CategoryValues>();
+    const { setFieldValue, isSubmitting } = useFormikContext<CategoryValues>();
     const { secondary } = useStoreState(state => state.theme.data!.colors);
+    const lastEggIdRef = useRef<number | undefined>();
 
     useEffect(() => {
         if (category) {
@@ -46,10 +47,11 @@ function InternalForm({ category, visible, setVisible }: Props) {
 
     // Sync egg state with formik eggId field
     useEffect(() => {
-        if (egg?.id !== undefined && egg.id !== values.eggId) {
+        if (egg?.id !== undefined && egg.id !== lastEggIdRef.current) {
+            lastEggIdRef.current = egg.id;
             setFieldValue('eggId', egg.id);
         }
-    }, [egg, values.eggId, setFieldValue]);
+    }, [egg, setFieldValue]);
 
 
     return (
