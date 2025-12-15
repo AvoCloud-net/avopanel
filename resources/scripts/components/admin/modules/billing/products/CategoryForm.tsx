@@ -195,6 +195,7 @@ export default ({ category }: { category?: Category }) => {
             </div>
             <Formik
                 onSubmit={category ? update : submit}
+                enableReinitialize={true}
                 initialValues={{
                     name: category?.name ?? '',
                     icon: category?.icon ?? '',
