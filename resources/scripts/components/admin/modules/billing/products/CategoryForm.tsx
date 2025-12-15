@@ -33,7 +33,7 @@ interface Props {
 
 function InternalForm({ category, visible, setVisible }: Props) {
     const [egg, setEgg] = useState<WithRelationships<Egg, 'variables'> | undefined>();
-    const { isSubmitting } = useFormikContext<CategoryValues>();
+    const { setFieldValue, values, isSubmitting } = useFormikContext<CategoryValues>();
     const { secondary } = useStoreState(state => state.theme.data!.colors);
 
     useEffect(() => {
@@ -42,7 +42,14 @@ function InternalForm({ category, visible, setVisible }: Props) {
                 .then(egg => setEgg(egg))
                 .catch(error => console.error(error));
         }
-    }, []);
+    }, [category]);
+
+    // Sync egg state with formik eggId field
+    useEffect(() => {
+        if (egg?.id !== undefined && egg.id !== values.eggId) {
+            setFieldValue('eggId', egg.id);
+        }
+    }, [egg, values.eggId, setFieldValue]);
 
 
     return (
