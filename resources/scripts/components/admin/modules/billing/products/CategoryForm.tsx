@@ -2,14 +2,14 @@ import type { Actions } from 'easy-peasy';
 import { useStoreActions } from 'easy-peasy';
 import type { FormikHelpers } from 'formik';
 import { Form, Formik, useFormikContext } from 'formik';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Field, { FieldRow } from '@/elements/Field';
 import tw from 'twin.macro';
 import AdminContentBlock from '@/elements/AdminContentBlock';
 import { Button } from '@/elements/button';
 import type { ApplicationStore } from '@/state';
 import AdminBox from '@/elements/AdminBox';
-import { createCategory, updateCategory } from '@/api/routes/admin/billing/categories';
+import { createCategory, updateCategory, getCategory } from '@/api/routes/admin/billing/categories';
 import { object, string, boolean, number } from 'yup';
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from '@/state/hooks';
@@ -23,6 +23,7 @@ import CategoryDeleteButton from './CategoryDeleteButton';
 import { getEgg } from '@/api/routes/admin/egg';
 import { Category } from '@definitions/admin';
 import { CategoryValues } from '@/api/routes/admin/billing/types';
+import { useSWRConfig } from 'swr';
 
 interface Props {
     visible: boolean;
@@ -32,7 +33,7 @@ interface Props {
 
 function InternalForm({ category, visible, setVisible }: Props) {
     const [egg, setEgg] = useState<WithRelationships<Egg, 'variables'> | undefined>();
-    const { setFieldValue, isSubmitting } = useFormikContext<CategoryValues>();
+    const { isSubmitting } = useFormikContext<CategoryValues>();
     const { secondary } = useStoreState(state => state.theme.data!.colors);
 
     useEffect(() => {
@@ -43,9 +44,6 @@ function InternalForm({ category, visible, setVisible }: Props) {
         }
     }, []);
 
-    useEffect(() => {
-        setFieldValue('eggId', egg?.id);
-    }, [egg]);
 
     return (
         <Form>
@@ -129,6 +127,8 @@ function InternalForm({ category, visible, setVisible }: Props) {
 
 export default ({ category }: { category?: Category }) => {
     const navigate = useNavigate();
+    const params = useParams<'id'>();
+    const { mutate } = useSWRConfig();
     const [visible, setVisible] = useState<boolean>(category?.visible || false);
 
     const { clearFlashes, clearAndAddHttpError } = useStoreActions(
@@ -155,6 +155,10 @@ export default ({ category }: { category?: Category }) => {
         values.visible = visible;
 
         updateCategory(category!.id, values)
+            .then(() => {
+                // Revalidate the SWR cache to fetch updated category data
+                mutate(`/api/application/billing/categories/${params.id}`);
+            })
             .catch(error => {
                 clearAndAddHttpError({ key: 'admin:billing:category:create', error });
             })
