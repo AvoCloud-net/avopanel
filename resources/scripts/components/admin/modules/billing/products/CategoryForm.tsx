@@ -44,7 +44,7 @@ function InternalForm({ category, visible, setVisible }: Props) {
                 .then(egg => setEgg(egg))
                 .catch(error => console.error(error));
         }
-    }, [category?.eggId, egg?.id]);
+    }, [category?.eggId]);
 
     // Sync egg state with formik eggId field (when user manually selects different egg)
     useEffect(() => {
