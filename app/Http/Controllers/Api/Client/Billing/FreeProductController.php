@@ -105,7 +105,7 @@ class FreeProductController extends ClientApiController
         }
 
         // Reset the renewal date to configured days from now (not add days)
-        $renewalDays = config('modules.billing.renewal.days', 30);
+        $renewalDays = config('modules.billing.renewal.free_renewal_days', 30);
         $server->update([
             'renewal_date' => Carbon::now()->addDays($renewalDays)->toDateTimeString(),
         ]);

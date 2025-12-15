@@ -55,6 +55,7 @@ export interface EverestSettings {
         };
         renewal?: {
             days: number;
+            free_renewal_days: number;
             suspension_threshold: number;
             free_suspension_days: number;
             paid_suspension_days: number;

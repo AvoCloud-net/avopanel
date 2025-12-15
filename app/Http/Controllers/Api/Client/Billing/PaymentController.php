@@ -183,6 +183,7 @@ class PaymentController extends ClientApiController
                 $this->suspensionService->toggle($server, SuspensionService::ACTION_UNSUSPEND);
             }
 
+            // Use paid renewal days for paid server renewals
             $renewalDays = config('modules.billing.renewal.days', 30);
             $server->update([
                 'renewal_date' => $server->renewal_date->addDays($renewalDays)->toDateTimeString(),

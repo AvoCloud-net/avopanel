@@ -15,7 +15,7 @@ export default () => {
     const { clearFlashes, addFlash } = useFlash();
 
     const [paidRenewalDays, setPaidRenewalDays] = useState<number>(settings.renewal?.days || 30);
-    const [freeRenewalDays, setFreeRenewalDays] = useState<number>(settings.renewal?.days || 30);
+    const [freeRenewalDays, setFreeRenewalDays] = useState<number>(settings.renewal?.free_renewal_days || 30);
     const [freeGraceDays, setFreeGraceDays] = useState<number>(
         settings.renewal?.free_suspension_days || 7
     );
@@ -31,6 +31,7 @@ export default () => {
         try {
             // Save all settings in sequence
             await updateSettings('renewal:days', paidRenewalDays);
+            await updateSettings('renewal:free_renewal_days', freeRenewalDays);
             await updateSettings('renewal:free_suspension_days', freeGraceDays);
             await updateSettings('renewal:paid_suspension_days', paidGraceDays);
 
@@ -41,6 +42,7 @@ export default () => {
                     renewal: {
                         ...settings.renewal,
                         days: paidRenewalDays,
+                        free_renewal_days: freeRenewalDays,
                         free_suspension_days: freeGraceDays,
                         paid_suspension_days: paidGraceDays,
                     },
