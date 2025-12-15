@@ -202,7 +202,7 @@ export default ({ category }: { category?: Category }) => {
                     visible: category?.visible ?? false,
                     eggId: category?.eggId ?? 0,
                     // Required by EggSelect component but not submitted to backend (not in CategoryValues type)
-                    environment: {} as Record<string, any>,
+                    environment: {} as Record<string, unknown>,
                 }}
                 validationSchema={object().shape({
                     name: string().required().max(191).min(3),
