@@ -9,7 +9,7 @@ import AdminContentBlock from '@/elements/AdminContentBlock';
 import { Button } from '@/elements/button';
 import type { ApplicationStore } from '@/state';
 import AdminBox from '@/elements/AdminBox';
-import { createCategory, updateCategory, getCategory } from '@/api/routes/admin/billing/categories';
+import { createCategory, updateCategory } from '@/api/routes/admin/billing/categories';
 import { object, string, boolean, number } from 'yup';
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from '@/state/hooks';
