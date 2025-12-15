@@ -164,9 +164,9 @@ export default ({ category }: { category?: Category }) => {
         values.visible = visible;
 
         updateCategory(category!.id, values)
-            .then(() => {
+            .then(async () => {
                 // Revalidate the SWR cache to fetch updated category data
-                mutate(`/api/application/billing/categories/${params.id}`);
+                await mutate(`/api/application/billing/categories/${params.id}`);
             })
             .catch(error => {
                 clearAndAddHttpError({ key: 'admin:billing:category:create', error });
