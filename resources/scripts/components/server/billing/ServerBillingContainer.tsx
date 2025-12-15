@@ -90,9 +90,9 @@ export default () => {
     const daysOverdue = daysRemaining < 0 ? Math.abs(daysRemaining) : 0;
     
     // Free servers can only be renewed if:
-    // 1. They're within the threshold period before renewal (e.g., 7 days or less), OR
+    // 1. They're within the threshold period before renewal (e.g., 7 days or less and not yet overdue), OR
     // 2. They're overdue but still within the grace period
-    const canRenew = daysRemaining <= suspensionThreshold && (daysOverdue === 0 || daysOverdue <= freeGraceDays);
+    const canRenew = (daysRemaining <= suspensionThreshold && daysRemaining > 0) || (daysRemaining <= 0 && daysOverdue <= freeGraceDays);
 
     return (
         <PageContentBlock
