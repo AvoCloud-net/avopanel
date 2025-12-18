@@ -38,7 +38,7 @@ export default ({
             // Build return URL with renewal and server UUID params for renewals
             let returnUrl = window.location.origin + '/account/billing/processing';
             if (renewal && serverUuid) {
-                returnUrl += `?renewal=true&server_uuid=${serverUuid}`;
+                returnUrl += `?renewal=true&server_uuid=${encodeURIComponent(serverUuid)}`;
             }
 
             const { error } = await stripe.confirmPayment({

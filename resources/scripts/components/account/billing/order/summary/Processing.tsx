@@ -35,7 +35,14 @@ export default () => {
             .then(() => {
                 // For renewals, redirect back to the server billing page
                 if (renewal && serverUuid) {
-                    navigate(`/server/${serverUuid}/billing`);
+                    // Validate UUID format to prevent path traversal
+                    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                    if (uuidRegex.test(serverUuid)) {
+                        navigate(`/server/${serverUuid}/billing`);
+                    } else {
+                        // Invalid UUID, redirect to dashboard
+                        navigate('/');
+                    }
                 } else {
                     // For new purchases, go to success page
                     navigate('/account/billing/success');
