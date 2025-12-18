@@ -103,7 +103,7 @@ class PaymentController extends ClientApiController
         }
 
         // Only validate node for new server purchases, not renewals
-        if (!$request->boolean('renewal') && $request->has('node_id')) {
+        if (!$request->boolean('renewal') && $request->filled('node_id')) {
             if (!Node::findOrFail($request->input('node_id'))->deployable) {
                 throw new DisplayException('Paid servers cannot be deployed to this node.');
             }
