@@ -66,7 +66,7 @@ export default (data: Props) => {
         <form onSubmit={handleSubmit}>
             <PaymentElement />
             <SpinnerOverlay visible={loading} />
-            <FlashMessageRender byKey={'store:order'} className={'mb-4'} />
+            <FlashMessageRender byKey={'account:billing:order'} className={'mb-4'} />
             <div className={'text-right'}>
                 <Button disabled={!data.selectedNode} className={'mt-4'} size={Button.Sizes.Large}>
                     Pay Now
