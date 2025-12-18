@@ -132,16 +132,12 @@ class FreeProductController extends ClientApiController
     /**
      * Determine whether an order is a NEW or RENEWAL.
      */
-    private function getOrderType(Request $request): mixed
+    private function getOrderType(Request $request): string
     {
-        $type = null;
-
         if ($request->has('renewal') && $request->boolean('renewal')) {
-            $type = Order::TYPE_REN;
-        } else {
-            $type = Order::TYPE_NEW;
+            return Order::TYPE_REN;
         }
 
-        return $type;
+        return Order::TYPE_NEW;
     }
 }
