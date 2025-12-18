@@ -17,7 +17,7 @@ class CreateOrderService
         $uuid = uuid_create();
 
         $order->name = $uuid;
-        $order->payment_intent_id = $intent ?? 'free-' . substr(uuid_create(), 0, 16);
+        $order->payment_intent_id = $intent ?? 'free-' . uuid_create();
         $order->user_id = $user->id;
         $order->description = substr($uuid, 0, 8) . ' - Order for ' . $product->name . ' by ' . $user->email;
         $order->total = $product->price ?? 0;
