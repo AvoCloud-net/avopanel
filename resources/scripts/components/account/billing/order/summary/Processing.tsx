@@ -40,8 +40,13 @@ export default () => {
                     if (uuidRegex.test(serverUuid)) {
                         navigate(`/server/${serverUuid}/billing`);
                     } else {
-                        // Invalid UUID, redirect to dashboard
-                        navigate('/');
+                        // Invalid UUID, redirect to dashboard with error message
+                        addFlash({
+                            key: 'billing:process',
+                            type: 'error',
+                            message: 'Invalid server identifier. Redirecting to dashboard.',
+                        });
+                        setTimeout(() => navigate('/'), 2000);
                     }
                 } else {
                     // For new purchases, go to success page
