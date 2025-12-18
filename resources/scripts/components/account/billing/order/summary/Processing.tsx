@@ -15,11 +15,11 @@ export default () => {
     const { addFlash, clearFlashes } = useFlash();
 
     const intent = params.get('payment_intent');
+    const renewal = params.get('renewal') === 'true';
+    const serverUuid = params.get('server_uuid');
 
     useEffect(() => {
         clearFlashes();
-
-        const renewal = Boolean(params.get('renewal'));
 
         if (!intent) {
             addFlash({
@@ -33,7 +33,13 @@ export default () => {
 
         processPaidOrder(intent, renewal)
             .then(() => {
-                navigate('/account/billing/success');
+                // For renewals, redirect back to the server billing page
+                if (renewal && serverUuid) {
+                    navigate(`/server/${serverUuid}/billing`);
+                } else {
+                    // For new purchases, go to success page
+                    navigate('/account/billing/success');
+                }
             })
             .catch(() => {
                 navigate('/account/billing/cancel');

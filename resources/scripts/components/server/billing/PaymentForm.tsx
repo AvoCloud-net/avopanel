@@ -11,11 +11,13 @@ export default ({
     serverId,
     intent,
     renewal,
+    serverUuid,
 }: {
     id?: number;
     serverId: number;
     intent: string;
     renewal?: boolean;
+    serverUuid?: string;
 }) => {
     const stripe = useStripe();
     const elements = useElements();
@@ -33,10 +35,16 @@ export default ({
         try {
             await updateStripeIntent({ id: id!, intent, serverId, renewal });
 
+            // Build return URL with renewal and server UUID params for renewals
+            let returnUrl = window.location.origin + '/account/billing/processing';
+            if (renewal && serverUuid) {
+                returnUrl += `?renewal=true&server_uuid=${serverUuid}`;
+            }
+
             const { error } = await stripe.confirmPayment({
                 elements,
                 confirmParams: {
-                    return_url: window.location.origin + '/account/billing/processing',
+                    return_url: returnUrl,
                 },
             });
 
