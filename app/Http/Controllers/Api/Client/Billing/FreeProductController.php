@@ -32,7 +32,7 @@ class FreeProductController extends ClientApiController
     public function process(Request $request): array
     {
         $user = $request->user();
-        $product = Product::findOrFail($request->input('product'));
+        $product = Product::with('category')->findOrFail($request->input('product'));
 
         if (!config('modules.billing.enabled')) {
             throw new DisplayException('The billing module is not enabled.');
@@ -87,7 +87,7 @@ class FreeProductController extends ClientApiController
     {
         $user = $request->user();
         $serverId = $request->input('server_id');
-        $product = Product::findOrFail($request->input('product'));
+        $product = Product::with('category')->findOrFail($request->input('product'));
 
         if (!config('modules.billing.enabled')) {
             throw new DisplayException('The billing module is not enabled.');
@@ -127,5 +127,17 @@ class FreeProductController extends ClientApiController
         return $this->fractal->item($server)
             ->transformWith(ServerTransformer::class)
             ->toArray();
+    }
+
+    /**
+     * Determine whether an order is a NEW or RENEWAL.
+     */
+    private function getOrderType(Request $request): string
+    {
+        if ($request->has('renewal') && $request->boolean('renewal')) {
+            return Order::TYPE_REN;
+        }
+
+        return Order::TYPE_NEW;
     }
 }
