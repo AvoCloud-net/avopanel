@@ -3,8 +3,8 @@
 namespace Everest\Tests\Integration\Api\Client\Server\Subuser;
 
 use Ramsey\Uuid\Uuid;
-use Mockery\MockInterface;
 use Everest\Models\User;
+use Mockery\MockInterface;
 use Everest\Models\Subuser;
 use Everest\Models\Permission;
 use PHPUnit\Framework\Attributes\TestWith;

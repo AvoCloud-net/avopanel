@@ -2,8 +2,8 @@
 
 namespace Everest\Tests\Integration\Api\Client\Server\Subuser;
 
-use Mockery\MockInterface;
 use Everest\Models\User;
+use Mockery\MockInterface;
 use Everest\Models\Subuser;
 use Everest\Repositories\Wings\DaemonRevocationRepository;
 use Everest\Tests\Integration\Api\Client\ClientApiIntegrationTestCase;

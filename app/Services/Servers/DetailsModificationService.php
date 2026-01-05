@@ -46,7 +46,7 @@ class DetailsModificationService
             // If the owner_id value is changed we need to revoke any tokens that exist for the server
             // on the Wings instance so that the old owner no longer has any permission to access the
             // websockets.
-            if (! $server->refresh()->user->is($original)) {
+            if (!$server->refresh()->user->is($original)) {
                 try {
                     $this->revocationRepository->setNode($server->node)->deauthorize(
                         $original->uuid,
