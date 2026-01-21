@@ -1,5 +1,5 @@
 import type { ChangeEvent } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import tw from 'twin.macro';
 
 import { httpErrorToHuman } from '@/api/http';
@@ -33,12 +33,51 @@ import TitledGreyBox from '@/elements/TitledGreyBox';
 import { ip } from '@/lib/formatters';
 import PageContentBlock from '@/elements/PageContentBlock';
 import { hashToPath } from '@/lib/helpers';
+import FileSortControls from '@server/files/FileSortControls';
+import type { SortField, SortDirection } from '@/state/server/files';
 
-const sortFiles = (files: FileObject[]): FileObject[] => {
-    const sortedFiles: FileObject[] = files
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .sort((a, b) => (a.isFile === b.isFile ? 0 : a.isFile ? 1 : -1));
-    return sortedFiles.filter((file, index) => index === 0 || file.name !== sortedFiles[index - 1]?.name);
+const sortFiles = (files: FileObject[], sortField: SortField, sortDirection: SortDirection): FileObject[] => {
+    const sorted = [...files].sort((a, b) => {
+        // Always put directories first, then files
+        if (a.isFile !== b.isFile) {
+            return a.isFile ? 1 : -1;
+        }
+
+        let comparison = 0;
+
+        switch (sortField) {
+            case 'name':
+                comparison = a.name.localeCompare(b.name);
+                break;
+            case 'modified':
+                comparison = a.modifiedAt.getTime() - b.modifiedAt.getTime();
+                break;
+            case 'size':
+                comparison = a.size - b.size;
+                break;
+            case 'type': {
+                // For type, we sort by file extension
+                const extA = a.isFile ? a.name.split('.').pop()?.toLowerCase() || '' : '';
+                const extB = b.isFile ? b.name.split('.').pop()?.toLowerCase() || '' : '';
+                comparison = extA.localeCompare(extB);
+                break;
+            }
+        }
+
+        return sortDirection === 'asc' ? comparison : -comparison;
+    });
+
+    // Remove duplicates
+    return sorted.filter((file, index) => index === 0 || file.name !== sorted[index - 1]?.name);
+};
+
+const filterFiles = (files: FileObject[], searchTerm: string): FileObject[] => {
+    if (!searchTerm.trim()) {
+        return files;
+    }
+
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return files.filter(file => file.name.toLowerCase().includes(lowerSearchTerm));
 };
 
 export default () => {
@@ -49,11 +88,38 @@ export default () => {
     const clearFlashes = useStoreActions(actions => actions.flashes.clearFlashes);
     const setDirectory = ServerContext.useStoreActions(actions => actions.files.setDirectory);
     const [gridView, setGridView] = usePersistedState<boolean>(`${id}_file_manager_view`, false);
+    const sortField = ServerContext.useStoreState(state => state.files.sortField);
+    const sortDirection = ServerContext.useStoreState(state => state.files.sortDirection);
+    const searchTerm = ServerContext.useStoreState(state => state.files.searchTerm);
+    const setSortField = ServerContext.useStoreActions(actions => actions.files.setSortField);
+    const setSortDirection = ServerContext.useStoreActions(actions => actions.files.setSortDirection);
+    const { colors } = useStoreState(state => state.theme.data!);
+    const [persistedSortField, setPersistedSortField] = usePersistedState<SortField>(
+        `${id}_file_manager_sort_field`,
+        'name',
+    );
+    const [persistedSortDirection, setPersistedSortDirection] = usePersistedState<SortDirection>(
+        `${id}_file_manager_sort_direction`,
+        'asc',
+    );
 
     const sftp = ServerContext.useStoreState(state => state.server.data!.sftpDetails);
     const username = useStoreState(state => state.user.data!.username);
     const setSelectedFiles = ServerContext.useStoreActions(actions => actions.files.setSelectedFiles);
     const selectedFilesLength = ServerContext.useStoreState(state => state.files.selectedFiles.length);
+
+    // Initialize sort settings from persisted state on mount
+    useEffect(() => {
+        setSortField(persistedSortField);
+        setSortDirection(persistedSortDirection);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Persist sort settings when they change
+    useEffect(() => {
+        setPersistedSortField(sortField);
+        setPersistedSortDirection(sortDirection);
+    }, [sortField, sortDirection, setPersistedSortField, setPersistedSortDirection]);
 
     useEffect(() => {
         clearFlashes('files');
@@ -68,6 +134,19 @@ export default () => {
     const onSelectAllClick = (e: ChangeEvent<HTMLInputElement>) => {
         setSelectedFiles(e.currentTarget.checked ? files?.map(file => file.name) || [] : []);
     };
+
+    // Memoized computation of filtered and sorted files
+    const { filteredFiles, displayFiles } = useMemo(() => {
+        if (!files) {
+            return { filteredFiles: [], displayFiles: [] };
+        }
+
+        const filtered = filterFiles(files, searchTerm);
+        const sorted = sortFiles(filtered, sortField, sortDirection);
+        const display = sorted.slice(0, 250);
+
+        return { filteredFiles: filtered, displayFiles: display };
+    }, [files, searchTerm, sortField, sortDirection]);
 
     if (error) {
         return <ServerError message={httpErrorToHuman(error)} onRetry={() => mutate()} />;
@@ -106,35 +185,55 @@ export default () => {
                         </div>
                     </Can>
                 </div>
+                <div className={'mb-4'}>
+                    <FileSortControls />
+                </div>
             </ErrorBoundary>
-            <div className={'grid xl:grid-cols-4 gap-4'}>
+            <div className={'grid gap-4 xl:grid-cols-4'}>
                 <div className={'xl:col-span-3'}>
                     {!files ? (
                         <Spinner size={'large'} centered />
                     ) : (
                         <>
-                            {!files.length ? (
-                                <p css={tw`text-sm text-neutral-400 text-center`}>This directory seems to be empty.</p>
+                            {!filteredFiles.length ? (
+                                <p css={tw`text-sm text-neutral-400 text-center`}>
+                                    {searchTerm
+                                        ? 'No files found matching your search.'
+                                        : 'This directory seems to be empty.'}
+                                </p>
                             ) : (
                                 <FadeTransition duration="duration-150" appear show>
                                     <div>
-                                        {files.length > 250 && (
+                                        {filteredFiles.length > 250 && (
                                             <div css={tw`rounded bg-yellow-400 mb-px p-3`}>
                                                 <p css={tw`text-yellow-900 text-sm text-center`}>
-                                                    This directory is too large to display in the browser, limiting the
-                                                    output to the first 250 files.
+                                                    {searchTerm
+                                                        ? `Found ${filteredFiles.length} files matching your search, showing first 250.`
+                                                        : 'This directory is too large to display in the browser, limiting the output to the first 250 files.'}
+                                                </p>
+                                            </div>
+                                        )}
+                                        {searchTerm && filteredFiles.length <= 250 && (
+                                            <div
+                                                css={tw`rounded mb-px p-3`}
+                                                style={{ backgroundColor: colors.primary }}
+                                            >
+                                                <p css={tw`text-white text-sm text-center`}>
+                                                    Found {filteredFiles.length}{' '}
+                                                    {filteredFiles.length === 1 ? 'file' : 'files'} matching &quot;
+                                                    {searchTerm}&quot;
                                                 </p>
                                             </div>
                                         )}
                                         {gridView ? (
-                                            <div className={'grid grid-cols-2 lg:grid-cols-6 gap-2 lg:gap-4'}>
-                                                {sortFiles(files.slice(0, 250)).map(file => (
+                                            <div className={'grid grid-cols-2 gap-2 lg:grid-cols-6 lg:gap-4'}>
+                                                {displayFiles.map(file => (
                                                     <FileObjectGrid key={file.key} file={file} />
                                                 ))}
                                             </div>
                                         ) : (
                                             <>
-                                                {sortFiles(files.slice(0, 250)).map(file => (
+                                                {displayFiles.map(file => (
                                                     <FileObjectList key={file.key} file={file} />
                                                 ))}
                                             </>
