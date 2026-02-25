@@ -199,9 +199,6 @@ class User extends Model implements
      */
     public function toReactObject(): array
     {
-        // Restore original behavior: build collection from array, append computed attrs,
-        // and exclude internal fields. This avoids triggering attribute accessors
-        // unexpectedly and keeps previous structure.
         return Collection::make($this->append(['avatar_url', 'admin_role_name'])->toArray())
             ->except(['id', 'external_id', 'admin_role'])
             ->toArray();
