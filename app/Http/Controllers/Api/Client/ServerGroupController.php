@@ -42,7 +42,9 @@ class ServerGroupController extends ClientApiController
      */
     public function add(ClientApiRequest $request, int $id): JsonResponse
     {
-        $server = Server::where('uuid', $request->input('server'))->first();
+        $server = Server::where('uuid', $request->input('server'))
+            ->where('owner_id', $request->user()->id)
+            ->first();
 
         try {
             $server->update(['group_id' => $id]);
@@ -58,7 +60,9 @@ class ServerGroupController extends ClientApiController
      */
     public function remove(ClientApiRequest $request, int $id): JsonResponse
     {
-        $server = Server::where('uuid', $request->input('server'))->first();
+        $server = Server::where('uuid', $request->input('server'))
+            ->where('owner_id', $request->user()->id)
+            ->first();
 
         $server->update(['group_id' => null]);
 
@@ -71,6 +75,10 @@ class ServerGroupController extends ClientApiController
     public function update(ClientApiRequest $request, int $id): JsonResponse
     {
         $group = ServerGroup::findOrFail($id);
+
+        if ($group->user_id !== $request->user->id()) {
+            throw new DisplayException('You do not have permission to edit this server group.');
+        };
 
         $group->update([
             'name' => $request['name'] ?? $group->name,
@@ -86,6 +94,10 @@ class ServerGroupController extends ClientApiController
     public function delete(ClientApiRequest $request, int $id): JsonResponse
     {
         $group = ServerGroup::findOrFail($id);
+
+        if ($group->user_id !== $request->user->id()) {
+            throw new DisplayException('You do not have permission to edit this server group.');
+        };
 
         $group->delete();
 
