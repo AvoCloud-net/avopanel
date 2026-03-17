@@ -340,6 +340,19 @@ export default class Transformers {
         updated_at: new Date(attributes.last_used_at),
     });
 
+    static toDiscountCode = ({ attributes }: FractalResponseData): Models.DiscountCode => ({
+        id: attributes.id,
+        code: attributes.code,
+        description: attributes.description,
+        type: attributes.type,
+        value: attributes.value,
+        uses: attributes.uses,
+        active: attributes.active,
+        expires_at: attributes.expires_at ? new Date(attributes.expires_at) : null,
+        created_at: new Date(attributes.created_at),
+        updated_at: attributes.updated_at ? new Date(attributes.updated_at) : null,
+    });
+
     static toWebhookEvent = ({ attributes }: FractalResponseData): WebhookEvent => ({
         id: attributes.id,
         key: attributes.key,

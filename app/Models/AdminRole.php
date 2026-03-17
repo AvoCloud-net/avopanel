@@ -85,6 +85,7 @@ class AdminRole extends Model
     public const BILLING_EXPORT = 'billing.export';
     public const BILLING_IMPORT = 'billing.import';
     public const BILLING_DELETE_KEYS = 'billing.delete-keys';
+    public const BILLING_DISCOUNT_CODES = 'billing.discount-codes';
 
     public const TICKETS_READ = 'tickets.read';
     public const TICKETS_CREATE = 'tickets.create';
@@ -215,6 +216,7 @@ class AdminRole extends Model
                 'export' => 'Export current billing configuration to JSON.',
                 'import' => 'Import current billing configuration from JSON.',
                 'delete-keys' => 'Delete Stripe API billing keys used for payment.',
+                'discount-codes' => 'Create, update and delete discount codes for checkout.',
             ],
         ],
         'tickets' => [

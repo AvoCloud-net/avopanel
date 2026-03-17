@@ -1,3 +1,5 @@
+import { DiscountCodeType } from '@/api/definitions/admin';
+
 export type OrderStatus = 'pending' | 'expired' | 'failed' | 'processed';
 
 export interface ProductValues {
@@ -47,4 +49,19 @@ export interface OrderFilters {
 export interface BillingExceptionFilters {
     id?: number;
     title?: string;
+}
+
+export interface DiscountCodeFilters {
+    id?: number;
+    code?: string;
+}
+
+export interface DiscountCodeValues {
+    code: string;
+    description: string;
+    type: DiscountCodeType;
+    value: number;
+    uses?: number | null;
+    active: boolean;
+    expires_at?: Date | undefined;
 }

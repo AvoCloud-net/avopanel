@@ -83,6 +83,13 @@ Route::middleware([AdminSubject::class])->group(function () {
             Route::get('/', [Application\Billing\OrderController::class, 'index']);
         });
 
+        Route::group(['prefix' => '/discount-codes'], function () {
+            Route::get('/', [Application\Billing\DiscountCodeController::class, 'index']);
+            Route::post('/', [Application\Billing\DiscountCodeController::class, 'store']);
+            Route::patch('/{discountCode:id}', [Application\Billing\DiscountCodeController::class, 'update']);
+            Route::delete('/{discountCode:id}', [Application\Billing\DiscountCodeController::class, 'delete']);
+        });
+
         Route::group(['prefix' => '/exceptions'], function () {
             Route::get('/', [Application\Billing\BillingExceptionController::class, 'index']);
 

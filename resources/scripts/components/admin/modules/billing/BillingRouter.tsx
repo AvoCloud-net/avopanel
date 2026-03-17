@@ -1,7 +1,6 @@
 import { useStoreState } from '@/state/hooks';
 import { Route, Routes } from 'react-router-dom';
 import { NotFound } from '@/elements/ScreenBlock';
-import AdminContentBlock from '@/elements/AdminContentBlock';
 import EnableBilling from '@admin/modules/billing/EnableBilling';
 import FlashMessageRender from '@/elements/FlashMessageRender';
 import ProductForm from '@admin/modules/billing/products/ProductForm';
@@ -15,6 +14,7 @@ import CategoryContainer from '@admin/modules/billing/products/CategoryContainer
 import {
     CalendarIcon,
     CogIcon,
+    CurrencyDollarIcon,
     DesktopComputerIcon,
     ShoppingCartIcon,
     ViewGridIcon,
@@ -24,6 +24,7 @@ import Unfinished from '@/elements/Unfinished';
 import SettingsContainer from '@admin/modules/billing/SettingsContainer';
 import BillingExceptionsContainer from './exceptions/BillingExceptionsContainer';
 import RenewalDatesContainer from '@admin/modules/billing/RenewalDatesContainer';
+import DiscountCodesContainer from '@/components/admin/modules/billing/discounts/DiscountCodesContainer';
 
 export default () => {
     const enabled = useStoreState(state => state.everest.data!.billing.enabled);
@@ -31,7 +32,7 @@ export default () => {
     if (!enabled) return <EnableBilling />;
 
     return (
-        <AdminContentBlock title={'Billing'}>
+        <>
             <div className={'w-full flex flex-row items-center mb-8'}>
                 <div className={'flex flex-col flex-shrink'} style={{ minWidth: '0' }}>
                     <h2 className={'text-2xl text-neutral-50 font-header font-medium'}>Billing</h2>
@@ -61,6 +62,9 @@ export default () => {
                 <SubNavigationLink to={'/admin/billing/renewal-dates'} name={'Renewal Dates'}>
                     <CalendarIcon />
                 </SubNavigationLink>
+                <SubNavigationLink to={'/admin/billing/discount-codes'} name={'Discount Codes'}>
+                    <CurrencyDollarIcon />
+                </SubNavigationLink>
                 <SubNavigationLink to={'/admin/billing/settings'} name={'Settings'}>
                     <CogIcon />
                 </SubNavigationLink>
@@ -81,10 +85,12 @@ export default () => {
 
                 <Route path={'/renewal-dates'} element={<RenewalDatesContainer />} />
 
+                <Route path={'/discount-codes'} element={<DiscountCodesContainer />} />
+
                 <Route path={'/settings'} element={<SettingsContainer />} />
 
                 <Route path={'/*'} element={<NotFound />} />
             </Routes>
-        </AdminContentBlock>
+        </>
     );
 };

@@ -4,6 +4,7 @@ import { OrderType } from '@/api/routes/account/billing/orders/types';
 
 type BillingExceptionType = 'payment' | 'deployment' | 'storefront';
 type OrderStatus = 'pending' | 'expired' | 'failed' | 'processed';
+export type DiscountCodeType = 'percentage' | 'numeric';
 
 interface User extends ModelWithRelationships {
     id: number;
@@ -104,6 +105,19 @@ interface Order extends Model {
     product_id: number;
     type: OrderType;
     threat_index: number;
+    created_at: Date;
+    updated_at?: Date | null;
+}
+
+interface DiscountCode extends Model {
+    id: number;
+    code: string;
+    description: string;
+    type: DiscountCodeType;
+    value: number;
+    uses?: number | null;
+    expires_at?: Date | null;
+    active: boolean;
     created_at: Date;
     updated_at?: Date | null;
 }
