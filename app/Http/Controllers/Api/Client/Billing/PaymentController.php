@@ -98,9 +98,7 @@ class PaymentController extends ClientApiController
         $product = Product::findOrFail($id);
         $intent = $this->stripe->paymentIntents->retrieve($request->input('intent'));
 
-        if (!config('modules.billing.enabled')) {
-            throw new DisplayException('The billing module is not enabled.');
-        }
+
 
         // Only validate node for new server purchases, not renewals
         if (!$request->boolean('renewal') && $request->filled('node_id')) {

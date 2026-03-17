@@ -31,7 +31,7 @@ class CreateServerService
     /**
      * Process the creation of a server.
      */
-    public function process(Request $request, Product $product, StripeObject $metadata, Order $order): Server
+    public function process(User $user, Product $product, StripeObject $metadata, Order $order): Server
     {
         $egg = Egg::findOrFail($product->category->egg_id);
 
@@ -65,8 +65,8 @@ class CreateServerService
                 'allocation_id' => $allocation,
                 'egg_id' => $egg->id,
                 'nest_id' => $product->category->nest_id,
-                'name' => $request->user()->username . '\'s server',
-                'owner_id' => $request->user()->id,
+                'name' => $user->username . '\'s ' . $product->name . ' Server',
+                'owner_id' => $user->id,
                 'memory' => $product->memory_limit,
                 'swap' => 0,
                 'disk' => $product->disk_limit,
@@ -99,7 +99,7 @@ class CreateServerService
     /**
      * Process the creation of a free server.
      */
-    public function processFree(Request $request, Product $product, int $nodeId, Order $order, array $customVariables = []): Server
+    public function processFree(User $user, Product $product, int $nodeId, Order $order, array $customVariables = []): Server
     {
         $egg = Egg::findOrFail($product->category->egg_id);
 
@@ -115,8 +115,8 @@ class CreateServerService
                 'allocation_id' => $allocation,
                 'egg_id' => $egg->id,
                 'nest_id' => $product->category->nest_id,
-                'name' => $request->user()->username . '\'s server',
-                'owner_id' => $request->user()->id,
+                'name' => $user->username . '\'s ' . $product->name . ' Server',
+                'owner_id' => $user->id,
                 'memory' => $product->memory_limit,
                 'swap' => 0,
                 'disk' => $product->disk_limit,

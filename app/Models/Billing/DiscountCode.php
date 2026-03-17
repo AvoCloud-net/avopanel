@@ -116,7 +116,7 @@ class DiscountCode extends Model
     {
         if ($this->type === self::TYPE_PERCENTAGE) {
             return max(0, $amount - intval($amount * ($this->value / 100)));
-        }
+        };
 
         return max(0, $amount - $this->value);
     }

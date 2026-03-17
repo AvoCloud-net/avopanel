@@ -34,10 +34,6 @@ class FreeProductController extends ClientApiController
         $user = $request->user();
         $product = Product::with('category')->findOrFail($request->input('product'));
 
-        if (!config('modules.billing.enabled')) {
-            throw new DisplayException('The billing module is not enabled.');
-        }
-
         if ((float) $product->price !== 0.0) {
             throw new DisplayException('This product holds a value greater than zero.');
         }
@@ -89,9 +85,7 @@ class FreeProductController extends ClientApiController
         $serverId = $request->input('server_id');
         $product = Product::with('category')->findOrFail($request->input('product'));
 
-        if (!config('modules.billing.enabled')) {
-            throw new DisplayException('The billing module is not enabled.');
-        }
+
 
         if ((float) $product->price !== 0.0) {
             throw new DisplayException('This product is not free.');

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $product_id
  * @property string $type
  * @property int $threat_index
+ * @property string|null $transaction_id
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
@@ -44,7 +45,7 @@ class Order extends Model
      * Fields that are mass assignable.
      */
     protected $fillable = [
-        'name', 'user_id', 'description',
+        'name', 'user_id', 'description', 'transaction_id',
         'total', 'status', 'product_id', 'type', 'threat_index',
     ];
 
@@ -67,6 +68,7 @@ class Order extends Model
         'product_id' => 'exists:products,id',
         'type' => 'required|in:new,upgrade,renewal',
         'threat_index' => 'nullable|int|min:-1|max:100',
+        'transaction_id' => 'nullable|string',
     ];
 
     /**
@@ -91,6 +93,30 @@ class Order extends Model
     public function requiresPayment(): boolean
     {
         if ($this->total > 0.0) {
+            return true;
+        } else {
+            return false;
+        };
+    }
+    
+    /**
+     * Return whether this order has already been processed.
+     */
+    public function isProcessed(): boolean
+    {
+        if ($this->status === Order::STATUS_PROCESSED) {
+            return true;
+        } else {
+            return false;
+        };
+    }
+
+    /**
+     * Return whether this order is a renewal or new server.
+     */
+    public function isRenewal(): boolean
+    {
+        if ($this->type === Order::TYPE_RENEWAL) {
             return true;
         } else {
             return false;
