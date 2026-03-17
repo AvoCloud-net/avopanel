@@ -3,6 +3,7 @@
 namespace Everest\Models\Billing;
 
 use Everest\Models\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -14,7 +15,6 @@ use Everest\Models\Model;
  * @property int $product_id
  * @property string $type
  * @property int $threat_index
- * @property string $payment_intent_id
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
@@ -26,8 +26,8 @@ class Order extends Model
     public const STATUS_PROCESSED = 'processed';
 
     public const TYPE_NEW = 'new';
-    public const TYPE_UPG = 'upg';
-    public const TYPE_REN = 'ren';
+    public const TYPE_UPGRADE = 'upgrade';
+    public const TYPE_RENEWAL = 'renewal';
 
     /**
      * The resource name for this model when it is transformed into an
@@ -44,7 +44,7 @@ class Order extends Model
      * Fields that are mass assignable.
      */
     protected $fillable = [
-        'name', 'user_id', 'description', 'payment_intent_id',
+        'name', 'user_id', 'description',
         'total', 'status', 'product_id', 'type', 'threat_index',
     ];
 
@@ -65,8 +65,35 @@ class Order extends Model
         'total' => 'required|min:0',
         'status' => 'required|in:expired,pending,failed,processed',
         'product_id' => 'exists:products,id',
-        'type' => 'required|in:new,upg,ren',
+        'type' => 'required|in:new,upgrade,renewal',
         'threat_index' => 'nullable|int|min:-1|max:100',
-        'payment_intent_id' => 'required|string|unique:orders,payment_intent_id',
     ];
+
+    /**
+     * Gets the user who this order is assigned to.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(Everest\Models\User::class, 'user_id');
+    }
+
+    /**
+     * Gets the product which this order is assigned to.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    /**
+     * Return whether a payment must be collected for this order.
+     */
+    public function requiresPayment(): boolean
+    {
+        if ($this->total > 0.0) {
+            return true;
+        } else {
+            return false;
+        };
+    }
 }

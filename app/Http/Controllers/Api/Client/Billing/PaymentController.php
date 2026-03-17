@@ -169,10 +169,7 @@ class PaymentController extends ClientApiController
         }
 
         // Check if order has already been processed
-        if (
-            $order->status === Order::STATUS_PROCESSED
-            && $intent->id === $order->payment_intent_id
-        ) {
+        if ($order->status === Order::STATUS_PROCESSED) {
             throw new DisplayException('This order has already been processed.');
         }
 
