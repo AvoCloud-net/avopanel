@@ -78,12 +78,6 @@ Route::prefix('/')->middleware([SuspendedAccount::class])->group(function () {
         Route::get('/products/{id}', [Client\Billing\ProductController::class, 'view']);
         Route::get('/products/{id}/variables', [Client\Billing\EggController::class, 'index']);
 
-        Route::get('/products/{id}/key', [Client\Billing\PaymentController::class, 'publicKey']);
-
-        Route::post('/products/{id}/intent', [Client\Billing\PaymentController::class, 'intent']);
-        Route::put('/products/{id}/intent', [Client\Billing\PaymentController::class, 'updateIntent']);
-
-        Route::post('/process', [Client\Billing\PaymentController::class, 'process'])->name('api:client.billing.process');
         Route::post('/process/free', [Client\Billing\FreeProductController::class, 'process']);
         Route::post('/renew/free', [Client\Billing\FreeProductController::class, 'renew']);
 
