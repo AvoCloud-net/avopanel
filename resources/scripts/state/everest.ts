@@ -40,7 +40,6 @@ export interface EverestSettings {
     billing: {
         enabled: boolean;
         keys: {
-            publishable: boolean;
             secret: boolean;
         };
         currency: {

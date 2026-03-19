@@ -48,7 +48,6 @@ class SettingsServiceProvider extends ServiceProvider
 
         // Billing module settings
         'modules:billing:enabled',
-        'modules:billing:keys:publishable',
         'modules:billing:keys:secret',
         'modules:billing:currency:code',
         'modules:billing:currency:symbol',

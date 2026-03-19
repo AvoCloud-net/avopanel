@@ -72,7 +72,7 @@ export default () => {
                     <ImportConfigButton />
                 </div>
             </AdminBox>
-            {!settings.keys.publishable || !settings.keys.secret ? (
+            {!settings.keys.secret ? (
                 <AdminBox title={'Input Stripe API Keys'} icon={faKey}>
                     Without Stripe API authentication, your billing system will not work. Customers may proceed to the
                     checkout area but will be met with errors unless you add valid API keys which can be obtained

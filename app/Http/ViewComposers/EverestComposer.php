@@ -47,7 +47,6 @@ class EverestComposer
             'billing' => [
                 'enabled' => boolval(config('modules.billing.enabled', false)),
                 'keys' => [
-                    'publishable' => boolval(config('modules.billing.keys.publishable')),
                     'secret' => boolval(config('modules.billing.keys.secret')),
                 ],
                 'currency' => [
