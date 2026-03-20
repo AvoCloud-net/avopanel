@@ -21,10 +21,11 @@ class ServerRenewalService
             $this->suspensionService->toggle($server, SuspensionService::ACTION_UNSUSPEND);
         }
 
-        $days = config('modules.billing.renewal.days', 30);
-        $new_date = $server->renewal_date->addDays($days)->toDateTimeString();
-        
-        $server->update(['renewal_date' => $new_date]);
+        $date = $server->renewal_date
+            ->addDays(config('modules.billing.renewal.days'))
+            ->toDateTimeString();
+
+        $server->update(['renewal_date' => $date]);
 
         return $server;
     }

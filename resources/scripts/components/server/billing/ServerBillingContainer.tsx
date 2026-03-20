@@ -43,11 +43,6 @@ export default () => {
     const billingProductId = ServerContext.useStoreState(s => s.server.data!.billingProductId);
     const renewalDate = ServerContext.useStoreState(s => s.server.data!.renewalDate);
 
-    const renewalDays = settings.renewal?.days || 30;
-    const freeRenewalDays = settings.renewal?.free_renewal_days || 30;
-    const freeGraceDays = settings.renewal?.free_suspension_days || 7;
-    const suspensionThreshold = settings.renewal?.suspension_threshold || 7;
-
     useEffect(() => {
         clearFlashes();
 
@@ -79,7 +74,6 @@ export default () => {
     };
 
     const daysRemaining = renewalDate ? timeUntil(renewalDate).days : 0;
-    const daysOverdue = daysRemaining < 0 ? Math.abs(daysRemaining) : 0;
 
     return (
         <PageContentBlock
@@ -117,7 +111,7 @@ export default () => {
                                 <p className={'text-gray-400 text-sm'}>
                                     {settings.currency.symbol}
                                     {product ? product.price : '...'} {settings.currency.code.toUpperCase()} every{' '}
-                                    {renewalDays} days
+                                    {settings.renewal.days} days
                                 </p>
                                 <Link to={'/account/billing/orders'} className={'text-green-400 text-xs'}>
                                     View order <FontAwesomeIcon icon={faArrowRight} />
@@ -142,32 +136,13 @@ export default () => {
                             {product.price === 0 ? (
                                 <div>
                                     <p className={'text-gray-400 text-sm mb-4'}>
-                                        This is a free server. You can renew it for another {freeRenewalDays} days
-                                        starting {suspensionThreshold} days before it expires, giving you time to renew
-                                        before expiration. You can also renew within the {freeGraceDays}-day grace
-                                        period after expiration.
+                                        This is a free server. You must renew it before your server expires in{' '}
+                                        {daysRemaining} days to prevent your server from being permenantly deleted.
                                     </p>
-                                    {daysOverdue > freeGraceDays ? (
-                                        <Alert type={'danger'}>
-                                            This server has been overdue for more than {freeGraceDays} days and can no
-                                            longer be renewed through self-service. Please contact support for
-                                            assistance.
-                                        </Alert>
-                                    ) : daysRemaining > suspensionThreshold ? (
-                                        <Alert type={'info'}>
-                                            You still have {daysRemaining} days before your server expires. The renew
-                                            button will become available {suspensionThreshold} days before expiration,
-                                            allowing you to renew in advance.
-                                        </Alert>
-                                    ) : (
-                                        <Button
-                                            onClick={handleFreeRenewal}
-                                            disabled={renewing}
-                                            size={Button.Sizes.Large}
-                                        >
-                                            {renewing ? 'Renewing...' : 'Renew Server'}
-                                        </Button>
-                                    )}
+                                    <Button onClick={handleFreeRenewal} disabled={renewing} size={Button.Sizes.Large}>
+                                        {renewing ? 'Renewing...' : 'Renew Server'}
+                                    </Button>
+                                    )
                                 </div>
                             ) : (
                                 <ServerPaymentButton product={product} />
