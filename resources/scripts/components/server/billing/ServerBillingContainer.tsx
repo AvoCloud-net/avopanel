@@ -12,11 +12,11 @@ import { useStoreState } from '@/state/hooks';
 import PageContentBlock from '@/elements/PageContentBlock';
 import { getProduct } from '@/api/routes/account/billing/products';
 import { Product } from '@definitions/account/billing';
-import { renewFreeServer } from '@/api/routes/account/billing/orders/process';
 import { Button } from '@/elements/button';
 import FlashMessageRender from '@/elements/FlashMessageRender';
 import ServerPaymentButton from './ServerPaymentButton';
 import OrdersContainer from '@/components/account/billing/orders/OrdersContainer';
+import { processFreeCheckoutSession } from '@/api/routes/account/billing/orders/process';
 
 export function timeUntil(targetDate: Date | string) {
     const date = targetDate instanceof Date ? targetDate : new Date(targetDate);
@@ -68,7 +68,7 @@ export default () => {
         setRenewing(true);
         clearFlashes('server:billing');
 
-        renewFreeServer(billingProductId, Number(serverId))
+        processFreeCheckoutSession(billingProductId, undefined, undefined, Number(serverId))
             .then(() => {
                 navigate(`/server/${serverUuid}`);
             })

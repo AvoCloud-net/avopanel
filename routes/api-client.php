@@ -71,22 +71,25 @@ Route::prefix('/')->middleware([SuspendedAccount::class])->group(function () {
     });
 
     Route::prefix('/billing')->middleware([BillingEnabled::class])->group(function () {
+        // Data for storefront checkout
         Route::post('/nodes/{product:id}', [Client\Billing\NodesController::class, 'index']);
         Route::get('/categories', [Client\Billing\CategoryController::class, 'index']);
 
+        // Viewing of available categories/products
         Route::get('/categories/{id}', [Client\Billing\ProductController::class, 'index']);
         Route::get('/products/{id}', [Client\Billing\ProductController::class, 'view']);
         Route::get('/products/{id}/variables', [Client\Billing\EggController::class, 'index']);
 
-        Route::post('/process/free', [Client\Billing\FreeProductController::class, 'process']);
-        Route::post('/renew/free', [Client\Billing\FreeProductController::class, 'renew']);
-
+        // View existing billing orders that have already been created
         Route::get('/orders', [Client\Billing\OrderController::class, 'index']);
         Route::get('/orders/{id}', [Client\Billing\OrderController::class, 'view']);
 
-        // v2
+        // Billing controllers and services
         Route::post('/stripe/create', [Client\Billing\StripeController::class, 'create']);
         Route::post('/stripe/process', [Client\Billing\StripeController::class, 'process']);
+
+        Route::post('/free/process', [Client\Billing\FreeProductController::class, 'process']);
+
     });
 
     /*

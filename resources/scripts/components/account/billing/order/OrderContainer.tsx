@@ -25,10 +25,10 @@ import { EggVariable } from '@definitions/server';
 import { Button } from '@/elements/button';
 import FlashMessageRender from '@/elements/FlashMessageRender';
 import { Product, type Node } from '@definitions/account/billing';
-import { createFreeCheckoutSession } from '@/api/routes/account/billing/orders/process';
 import { getProduct, getProductVariables, getViableNodes } from '@/api/routes/account/billing/products';
 import TitledGreyBox from '@/elements/TitledGreyBox';
 import AdminCheckbox from '@/elements/AdminCheckbox';
+import { processFreeCheckoutSession } from '@/api/routes/account/billing/orders/process';
 
 const LimitBox = ({ icon, content }: { icon: IconDefinition; content: string }) => {
     return (
@@ -61,7 +61,7 @@ export default () => {
     const createFree = () => {
         if (product) {
             const variables = Array.from(vars, ([key, value]) => ({ key, value }));
-            createFreeCheckoutSession(product.id, selectedNode, undefined, variables)
+            processFreeCheckoutSession(product.id, selectedNode, variables, undefined)
                 .then(() => navigate('/'))
                 .catch(error => clearAndAddHttpError({ key: 'account:billing:order', error }));
         }

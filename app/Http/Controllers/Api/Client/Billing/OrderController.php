@@ -32,6 +32,7 @@ class OrderController extends ClientApiController
             ->where('user_id', $request->user()->id)
             ->allowedFilters(['id', 'name', 'server_id'])
             ->allowedSorts(['id', 'name', 'total', 'is_renewal', 'created_at', 'threat_index'])
+            ->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
         return $this->fractal->collection($orders)

@@ -83,16 +83,16 @@ class FreeServerDeploymentService extends ServerDeploymentService
 
             if (!$node->deployable_free) {
                 throw new DisplayException('Free servers cannot be deployed to this node.');
-            }
+            };
+
+            if ($user->servers()->where('billing_product_id', $product->id)->count() > 0) {
+                throw new DisplayException('You already own one of this free product and cannot have multiple.');
+            };
         };
 
         if ($product->isPaid()) {
             throw new DisplayException('This package is paid and cannot be deployed for no cost.');
         };
-
-        if ($user->servers()->where('billing_product_id', $product->id)->count() > 0) {
-            throw new DisplayException('You already own one of this free product and cannot have multiple.');
-        }
         
 
         return;

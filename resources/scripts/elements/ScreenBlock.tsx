@@ -11,11 +11,11 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import { getProduct } from '@/api/routes/account/billing/products';
-import { renewFreeServer } from '@/api/routes/account/billing/orders/process';
 import useFlash from '@/plugins/useFlash';
 import FlashMessageRender from './FlashMessageRender';
 import ServerPaymentButton from '@/components/server/billing/ServerPaymentButton';
 import { Product } from '@/api/definitions/account/billing';
+import { processFreeCheckoutSession } from '@/api/routes/account/billing/orders/process';
 
 interface BaseProps {
     title: string;
@@ -131,7 +131,7 @@ const Suspended = ({
         setRenewing(true);
         clearFlashes('suspended:billing');
 
-        renewFreeServer(id, serverId)
+        processFreeCheckoutSession(product.id, undefined, undefined, serverId)
             .then(() => {
                 // Redirect to server overview after successful renewal
                 navigate(`/server/${serverUuid}`);

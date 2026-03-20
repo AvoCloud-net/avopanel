@@ -38,9 +38,15 @@ class FreeProductController extends ClientApiController
 
         $this->freeDeploymentService->validate($product, $user, $node, $is_new_order);
 
-        $order = $this->orderService->create(null, $user, $product, Order::STATUS_PENDING, $is_new_order);
+        $order = $this->orderService->create(
+            null,
+            $user,
+            $product,
+            Order::STATUS_PENDING,
+            $is_new_order ? Order::TYPE_NEW : Order::TYPE_RENEWAL,
+        );
 
-        if ($is_new_order && $node->exists()) {    
+        if ($is_new_order && $node) {    
             $server = $this->freeDeploymentService->handleFree(
                 $user,
                 $product,
@@ -48,8 +54,11 @@ class FreeProductController extends ClientApiController
                 $order,
                 $request->input('variables', []),
             );
+
+            $order->assignServer($server);
         } else {
             $server = Server::findOrFail($request->input('server_id'));
+            $order->assignServer($server);
 
             $this->renewalService->handle($server);
         }
