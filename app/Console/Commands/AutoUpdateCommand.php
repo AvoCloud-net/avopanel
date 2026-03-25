@@ -15,33 +15,35 @@ class AutoUpdateCommand extends Command
         {--user= : The user that PHP runs under. All files will be owned by this user.}
         {--group= : The group that PHP runs under. All files will be owned by this group.}
         {--url= : The specific archive to download.}
-        {--release= : A specific Jexactyl version to download from GitHub. Leave blank to use latest.}';
+        {--release= : A specific Jexpanel version to download from GitHub. Leave blank to use latest.}';
 
-    protected $description = 'Downloads a new archive for Jexactyl from GitHub and then executes the normal upgrade commands.';
+    protected $description = 'Downloads a new archive for Jexpanel from GitHub and then executes the normal upgrade commands.';
 
     /**
      * Executes an upgrade command which will run through all of our standard
-     * commands for Jexactyl and enable users to basically just download
+     * commands for Jexpanel and enable users to basically just download
      * the archive and execute this and be done.
      *
      * @throws \Exception
      */
     public function handle()
     {
-        if (version_compare(PHP_VERSION, '8.1.0') < 0) {
-            $this->error('Cannot execute automatic update process. The minimum required PHP version required is 8.1.0, you have [' . PHP_VERSION . '].');
+        if (version_compare(PHP_VERSION, '8.2.0') < 0) {
+            $this->error('Cannot execute automatic update process. The minimum required PHP version required is 8.2.0, you have [' . PHP_VERSION . '].');
+            return self::FAILURE;
         }
 
-        $user = 'www-data';
-        $group = 'www-data';
+        $user = $this->option('user') ?? 'www-data';
+        $group = $this->option('group') ?? 'www-data';
 
         ini_set('output_buffering', '0');
-        $bar = $this->output->createProgressBar(10);
+        $bar = $this->output->createProgressBar(9);
         $bar->start();
 
         $this->withProgress($bar, function () {
-            $this->line("\$upgrader> curl -Lo \"{$this->getUrl()}\" | tar -xzv");
-            $process = Process::fromShellCommandline("curl -Lo ./panel.tar.gz {$this->getUrl()} | tar -xzf");
+            $this->line("\$upgrader> curl -L \"{$this->getUrl()}\" | tar -xzf -");
+
+            $process = Process::fromShellCommandline("curl -L {$this->getUrl()} | tar -xzf -");
             $process->run(function ($type, $buffer) {
                 $this->{$type === Process::ERR ? 'error' : 'line'}($buffer);
             });
@@ -83,13 +85,8 @@ class AutoUpdateCommand extends Command
         $this->setLaravel($app);
 
         $this->withProgress($bar, function () {
-            $this->line('$upgrader> php artisan view:clear');
-            $this->call('view:clear');
-        });
-
-        $this->withProgress($bar, function () {
-            $this->line('$upgrader> php artisan config:clear');
-            $this->call('config:clear');
+            $this->line('$upgrader> php artisan optimize:clear');
+            $this->call('optimize:clear');
         });
 
         $this->withProgress($bar, function () {

@@ -49,22 +49,6 @@ class SoftwareVersionService
     }
 
     /**
-     * Returns the URL to the discord server.
-     */
-    public function getDiscord(): string
-    {
-        return Arr::get(self::$result, 'discord') ?? 'https://pterodactyl.io/discord';
-    }
-
-    /**
-     * Returns the URL for donations.
-     */
-    public function getDonations(): string
-    {
-        return Arr::get(self::$result, 'donations') ?? 'https://github.com/sponsors/matthewpi';
-    }
-
-    /**
      * Determine if the current version of the panel is the latest.
      */
     public function isLatestPanel(): bool
