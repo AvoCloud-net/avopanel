@@ -26,10 +26,14 @@ const login = ({ username, password, recaptchaData }: LoginData): Promise<AuthRe
     });
 };
 
-const externalLogin = (name: string): Promise<void> => {
+const externalLogin = (name: string, recaptchaData: string): Promise<void> => {
     return new Promise((resolve, reject) => {
         http.get('/sanctum/csrf-cookie')
-            .then(() => http.post(`/auth/modules/${name}`))
+            .then(() =>
+                http.post(`/auth/modules/${name}`, {
+                    'g-recaptcha-response': recaptchaData,
+                }),
+            )
             .then(({ data }) => resolve(data || []))
             .catch(reject);
     });

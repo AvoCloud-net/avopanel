@@ -40,7 +40,17 @@ function LoginContainer() {
     }, []);
 
     const useOauth = (name: string) => {
-        externalLogin(name)
+        if (recaptchaEnabled && !token.current) {
+            ref.current!.execute().catch(error => {
+                console.error(error);
+
+                clearAndAddHttpError({ error });
+            });
+
+            return;
+        }
+
+        externalLogin(name, token.current)
             .then(url => {
                 // @ts-expect-error this is fine
                 window.location = url;
