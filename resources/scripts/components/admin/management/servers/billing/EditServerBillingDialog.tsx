@@ -21,17 +21,19 @@ const localToUTC = (localStr: string): Date => {
     return new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
 };
 
+type LoadingState = 'loading' | 'ready';
+
 export default ({ server }: { server: Server }) => {
     const billing = useStoreState(state => state.everest.data!.billing);
 
     const [open, setOpen] = useState<boolean>(false);
+    const [loadingState, setLoadingState] = useState<LoadingState>('loading');
     const [billable, setBillable] = useState<boolean>(Boolean(server.billingProductId));
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
 
-    const [existingProduct, setExistingProduct] = useState<Product | null>();
-    const [categoryId, setCategoryId] = useState<number>();
-    const [productId, setProductId] = useState<number>();
+    const [categoryId, setCategoryId] = useState<number | undefined>();
+    const [productId, setProductId] = useState<number | undefined>();
 
     const [renewalDate, setRenewalDate] = useState<string>(
         server.renewalDate
@@ -40,29 +42,42 @@ export default ({ server }: { server: Server }) => {
     );
 
     useEffect(() => {
-        // Get all categories available for billing
-        getCategories().then(data => {
-            setCategories(data);
+        const init = async () => {
+            const [cats, existingProduct] = await Promise.all([
+                getCategories(),
+                server.billingProductId ? getProduct(server.billingProductId) : Promise.resolve(null),
+            ]);
 
-            if (data[0]) {
-                setCategoryId(data[0].id);
+            setCategories(cats);
+
+            if (existingProduct) {
+                const matchedCategory = cats.find(c => c.uuid === existingProduct.categoryUuid);
+                setCategoryId(matchedCategory?.id);
+                setProductId(existingProduct.id);
+            } else if (cats[0]) {
+                setCategoryId(cats[0].id);
             }
-        });
-        // Get the product already associated (if exists)
-        if (server.billingProductId) {
-            setProductId(server.billingProductId);
 
-            getProduct(server.billingProductId).then(data => {
-                setExistingProduct(data);
-                setCategoryId(data.categoryId);
-            });
-        }
+            setLoadingState('ready');
+        };
+
+        init().catch(err => {
+            console.error('Failed to load billing data:', err);
+            setLoadingState('ready');
+        });
     }, []);
 
     useEffect(() => {
-        if (categoryId) {
-            getProducts(categoryId).then(setProducts);
-        }
+        if (!categoryId) return;
+
+        getProducts(categoryId).then(data => {
+            setProducts(data);
+
+            setProductId(prev => {
+                const stillValid = prev && data.some(p => p.id === prev);
+                return stillValid ? prev : data[0]?.id;
+            });
+        });
     }, [categoryId]);
 
     const submit = () => {
@@ -81,8 +96,6 @@ export default ({ server }: { server: Server }) => {
             .catch(error => console.log(error));
     };
 
-    if (!categories || !products) return <Spinner size={'large'} centered />;
-
     return (
         <>
             <Dialog open={open} onClose={() => setOpen(false)} title={'Edit Server Billing'}>
@@ -90,6 +103,7 @@ export default ({ server }: { server: Server }) => {
                 <Formik onSubmit={submit} initialValues={{}}>
                     <Form>
                         <div className={'grid space-y-6'}>
+                            {/* Billing Status */}
                             <div>
                                 <div className={'flex'}>
                                     <Label>
@@ -123,6 +137,7 @@ export default ({ server }: { server: Server }) => {
 
                             {billable && (
                                 <>
+                                    {/* Billing Category */}
                                     <div>
                                         <div className={'flex'}>
                                             <Label>
@@ -132,44 +147,54 @@ export default ({ server }: { server: Server }) => {
                                                 Select the category for billing.
                                             </span>
                                         </div>
-                                        {!categories ? (
+                                        {loadingState === 'loading' ? (
                                             <Spinner centered />
                                         ) : (
                                             <Select
-                                                value={categoryId}
+                                                value={categoryId ?? ''}
                                                 onChange={e => setCategoryId(Number(e.target.value))}
                                             >
                                                 {categories.map(category => (
-                                                    <option
-                                                        key={category.id}
-                                                        value={category.id}
-                                                        selected={existingProduct?.categoryUuid === category.uuid}
-                                                    >
+                                                    <option key={category.id} value={category.id}>
                                                         {category.name} - {category.description}
                                                     </option>
                                                 ))}
                                             </Select>
                                         )}
                                     </div>
-                                    {products && (
-                                        <Select value={productId} onChange={e => setProductId(Number(e.target.value))}>
-                                            {products.map(product => (
-                                                <option
-                                                    key={product.id}
-                                                    value={product.id}
-                                                    selected={productId === product.id}
-                                                >
-                                                    {product.name} ({product.limits.cpu}% CPU,{' '}
-                                                    {product.limits.memory / 1024}GB RAM, {product.limits.disk / 1024}
-                                                    GB Disk) - {billing.currency.symbol}
-                                                    {product.price}/mo
-                                                </option>
-                                            ))}
-                                        </Select>
-                                    )}
+
+                                    {/* Billing Product */}
+                                    <div>
+                                        <div className={'flex'}>
+                                            <Label>
+                                                <CashIcon className={'w-4 inline-flex'} /> Billing Product
+                                            </Label>
+                                            <span className={'ml-2 italic text-gray-400 text-sm'}>
+                                                Select the product to assign to this server.
+                                            </span>
+                                        </div>
+                                        {loadingState === 'loading' ? (
+                                            <Spinner centered />
+                                        ) : (
+                                            <Select
+                                                value={productId ?? ''}
+                                                onChange={e => setProductId(Number(e.target.value))}
+                                            >
+                                                {products.map(product => (
+                                                    <option key={product.id} value={product.id}>
+                                                        {product.name} ({product.limits.cpu}% CPU,{' '}
+                                                        {product.limits.memory / 1024}GB RAM,{' '}
+                                                        {product.limits.disk / 1024}GB Disk) - {billing.currency.symbol}
+                                                        {product.price}/mo
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                        )}
+                                    </div>
                                 </>
                             )}
 
+                            {/* Renewal Date */}
                             <div>
                                 <div className={'flex'}>
                                     <Label>
