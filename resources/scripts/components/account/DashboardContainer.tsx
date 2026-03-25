@@ -101,8 +101,8 @@ export default () => {
                             <FontAwesomeIcon icon={faList} />
                         </Button.Text>
                     </h2>
-                    <ContentBox>
-                        {!servers || servers.items.length < 1 ? (
+                    {!servers || servers.items.length < 1 ? (
+                        <ContentBox>
                             <div className={'text-gray-400'}>
                                 <div className={'grid lg:grid-cols-2 gap-6 m-4'}>
                                     <ServerSvg color={colors.primary} />
@@ -134,43 +134,38 @@ export default () => {
                                     </div>
                                 </div>
                             </div>
-                        ) : (
-                            <Pagination data={servers} onPageSelect={setPage}>
-                                {({ items }) =>
-                                    items.length > 0 ? (
-                                        items.map((server, _index) => (
-                                            <>
-                                                <ServerRow
-                                                    key={server.uuid}
-                                                    server={server}
-                                                    setOpen={setOpen}
-                                                    group={groups.find(x => x.id === server.groupId)}
-                                                />
-                                            </>
-                                        ))
-                                    ) : (
-                                        <div className={'w-full'} style={{ backgroundColor: colors.secondary }}>
-                                            <div className={'px-6 py-4 text-gray-300'}>
-                                                <div css={tw`flex justify-center`}>
-                                                    <div
-                                                        css={tw`w-full sm:w-3/4 md:w-1/2 rounded-lg text-center relative`}
-                                                    >
-                                                        <img
-                                                            src={NotFoundSvg}
-                                                            css={tw`w-2/3 h-auto select-none mx-auto`}
-                                                        />
-                                                        <h2 css={tw`mt-10 mb-6 text-white font-medium text-xl`}>
-                                                            No servers could be found.
-                                                        </h2>
-                                                    </div>
+                        </ContentBox>
+                    ) : (
+                        <Pagination data={servers} onPageSelect={setPage}>
+                            {({ items }) =>
+                                items.length > 0 ? (
+                                    items.map((server, _index) => (
+                                        <>
+                                            <ServerRow
+                                                key={server.uuid}
+                                                server={server}
+                                                setOpen={setOpen}
+                                                group={groups.find(x => x.id === server.groupId)}
+                                            />
+                                        </>
+                                    ))
+                                ) : (
+                                    <div className={'w-full'} style={{ backgroundColor: colors.secondary }}>
+                                        <div className={'px-6 py-4 text-gray-300'}>
+                                            <div css={tw`flex justify-center`}>
+                                                <div css={tw`w-full sm:w-3/4 md:w-1/2 rounded-lg text-center relative`}>
+                                                    <img src={NotFoundSvg} css={tw`w-2/3 h-auto select-none mx-auto`} />
+                                                    <h2 css={tw`mt-10 mb-6 text-white font-medium text-xl`}>
+                                                        No servers could be found.
+                                                    </h2>
                                                 </div>
                                             </div>
                                         </div>
-                                    )
-                                }
-                            </Pagination>
-                        )}
-                    </ContentBox>
+                                    </div>
+                                )
+                            }
+                        </Pagination>
+                    )}
                 </div>
                 {activityEnabled && (
                     <ContentBox title={'Account Activity'}>
