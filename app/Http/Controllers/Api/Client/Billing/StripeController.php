@@ -72,6 +72,10 @@ class StripeController extends ClientApiController
 
         $order_type = $server ? Order::TYPE_RENEWAL : Order::TYPE_NEW;
 
+        if ($request->exists('discount_code')) {
+            $price = $this->discountService->handle($product, $request->input('discount_code'));
+        }
+
         $metadata = [
             'user_id' => (string) $request->user()->id,
             'customer_email' => $request->user()->email,
@@ -80,11 +84,8 @@ class StripeController extends ClientApiController
             'server_id' => (string) ($server?->id ?? 0),
             'variables' => json_encode($request->input('variables') ?? []),
             'order_type' => $order_type,
+            'discount_code', $request->input('discount_code') ?? null,
         ];
-
-        if ($request->exists('discount_code')) {
-            $price = $this->discountService->handle($product, $request->input('discount_code'));
-        }
 
         $transaction = $this->paymentService->create($this->stripe, $request->user(), $product, $metadata, $price);
 
@@ -155,6 +156,12 @@ class StripeController extends ClientApiController
                 'title' => 'Deployment or renewal of server failed',
                 'description' => $exception->getMessage(),
             ]);
+        }
+
+        $discount_code = DiscountCode::where('code', $metadata->discount_code)->first();
+
+        if ($discount_code) {
+            $discount_code->use();
         }
 
         return $this->fractal->item($server)
