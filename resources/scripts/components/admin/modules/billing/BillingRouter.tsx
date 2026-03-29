@@ -20,7 +20,6 @@ import {
     ViewGridIcon,
     XCircleIcon,
 } from '@heroicons/react/outline';
-import Unfinished from '@/elements/Unfinished';
 import SettingsContainer from '@admin/modules/billing/SettingsContainer';
 import BillingExceptionsContainer from './exceptions/BillingExceptionsContainer';
 import RenewalDatesContainer from '@admin/modules/billing/RenewalDatesContainer';
@@ -41,8 +40,6 @@ export default () => {
                     </p>
                 </div>
             </div>
-
-            <Unfinished untested />
 
             <FlashMessageRender byKey={'admin:billing'} className={'mb-4'} />
 

@@ -11,7 +11,6 @@ import DiscordSSO from './modules/DiscordSSO';
 import Onboarding from '@admin/modules/auth/modules/Onboarding';
 import GoogleSSO from './modules/GoogleSSO';
 import JGuard from './modules/JGuard';
-import Unfinished from '@/elements/Unfinished';
 
 export default () => {
     const [visible, setVisible] = useState<boolean>(false);
@@ -46,7 +45,6 @@ export default () => {
                     </Button>
                 </div>
             </div>
-            <Unfinished untested />
             <div className={'grid md:grid-cols-2 xl:grid-cols-3 gap-4'}>
                 <Registration />
                 <Security />
