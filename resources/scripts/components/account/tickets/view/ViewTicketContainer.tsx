@@ -57,7 +57,8 @@ export default () => {
                                 'There are no messages assigned to this ticket.'
                             ) : (
                                 <>
-                                    {ticket.relationships.messages
+                                    {[...ticket.relationships.messages]
+                                        .reverse()
                                         .map(message => (
                                             <div key={message.id} className={'mb-4'}>
                                                 <div
@@ -81,8 +82,7 @@ export default () => {
                                                     })}
                                                 </p>
                                             </div>
-                                        ))
-                                        .toReversed()}
+                                        ))}
                                 </>
                             )}
                         </ContentBox>

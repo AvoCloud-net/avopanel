@@ -58,7 +58,8 @@ const MessagesTable = ({ ticketId }: { ticketId: number }) => {
                                 <TableBody>
                                     {messages !== undefined &&
                                         messages.items.length > 0 &&
-                                        messages.items
+                                        [...messages.items]
+                                            .reverse()
                                             .map(message => (
                                                 <TableRow key={message.id}>
                                                     <td
@@ -119,8 +120,7 @@ const MessagesTable = ({ ticketId }: { ticketId: number }) => {
                                                         </Button>
                                                     </td>
                                                 </TableRow>
-                                            ))
-                                            .toReversed()}
+                                            ))}
                                 </TableBody>
                             </table>
 
