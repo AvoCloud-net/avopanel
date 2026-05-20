@@ -84,7 +84,7 @@ function ServerRouter() {
             <Suspended
                 id={server.billingProductId}
                 date={server.renewalDate}
-                serverId={server.internalId}
+                serverId={Number(server.internalId)}
                 serverUuid={server.uuid}
             />
         );
