@@ -1,36 +1,38 @@
-import { CSSObject } from '@emotion/serialize';
 import { Field as FormikField, FieldProps } from 'formik';
 import { forwardRef } from 'react';
 import Select, {
+    ClearIndicatorProps,
     ContainerProps,
     ControlProps,
+    DropdownIndicatorProps,
+    GroupHeadingProps,
     GroupProps,
-    IndicatorContainerProps,
-    IndicatorProps,
+    IndicatorsContainerProps,
+    IndicatorSeparatorProps,
     InputProps,
-    MenuListComponentProps,
+    LoadingIndicatorProps,
+    MenuListProps,
     MenuProps,
     MultiValueProps,
+    MultiValueRemoveProps,
+    NoticeProps,
+    OnChangeValue,
     OptionProps,
     PlaceholderProps,
     SingleValueProps,
     StylesConfig,
     ValueContainerProps,
+    CSSObjectWithLabel,
 } from 'react-select';
 import Async from 'react-select/async';
 import Creatable from 'react-select/creatable';
 import tw, { theme } from 'twin.macro';
 import Label from '@/elements/Label';
-import { ValueType } from 'react-select/src/types';
-import { GroupHeadingProps } from 'react-select/src/components/Group';
-import { MenuPortalProps, NoticeProps } from 'react-select/src/components/Menu';
-import { LoadingIndicatorProps } from 'react-select/src/components/indicators';
-import { MultiValueRemoveProps } from 'react-select/src/components/MultiValue';
 
 type T = any;
 
 export const SelectStyle: StylesConfig<T, any, any> = {
-    clearIndicator: (base: CSSObject, props: IndicatorProps<T, any, any>): CSSObject => {
+    clearIndicator: (base: CSSObjectWithLabel, props: ClearIndicatorProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             color: props.isFocused ? theme`colors.neutral.300` : theme`colors.neutral.400`,
@@ -41,14 +43,13 @@ export const SelectStyle: StylesConfig<T, any, any> = {
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    container: (base: CSSObject, props: ContainerProps<T, any, any>): CSSObject => {
+    container: (base: CSSObjectWithLabel, _props: ContainerProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    control: (base: CSSObject, props: ControlProps<T, any, any>): CSSObject => {
+    control: (base: CSSObjectWithLabel, props: ControlProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             height: '3rem',
@@ -67,7 +68,7 @@ export const SelectStyle: StylesConfig<T, any, any> = {
         };
     },
 
-    dropdownIndicator: (base: CSSObject, props: IndicatorProps<T, any, any>): CSSObject => {
+    dropdownIndicator: (base: CSSObjectWithLabel, props: DropdownIndicatorProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             color: props.isFocused ? theme`colors.neutral.300` : theme`colors.neutral.400`,
@@ -79,37 +80,32 @@ export const SelectStyle: StylesConfig<T, any, any> = {
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    group: (base: CSSObject, props: GroupProps<T, any, any>): CSSObject => {
+    group: (base: CSSObjectWithLabel, _props: GroupProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    groupHeading: (base: CSSObject, props: GroupHeadingProps<T, any, any>): CSSObject => {
+    groupHeading: (base: CSSObjectWithLabel, _props: GroupHeadingProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    indicatorsContainer: (base: CSSObject, props: IndicatorContainerProps<T, any, any>): CSSObject => {
+    indicatorsContainer: (base: CSSObjectWithLabel, _props: IndicatorsContainerProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    indicatorSeparator: (base: CSSObject, props: IndicatorProps<T, any, any>): CSSObject => {
+    indicatorSeparator: (base: CSSObjectWithLabel, _props: IndicatorSeparatorProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             backgroundColor: theme`colors.neutral.500`,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    input: (base: CSSObject, props: InputProps): CSSObject => {
+    input: (base: CSSObjectWithLabel, _props: InputProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             color: theme`colors.neutral.200`,
@@ -117,22 +113,19 @@ export const SelectStyle: StylesConfig<T, any, any> = {
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    loadingIndicator: (base: CSSObject, props: LoadingIndicatorProps<T, any, any>): CSSObject => {
+    loadingIndicator: (base: CSSObjectWithLabel, _props: LoadingIndicatorProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    loadingMessage: (base: CSSObject, props: NoticeProps<T, any, any>): CSSObject => {
+    loadingMessage: (base: CSSObjectWithLabel, _props: NoticeProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    menu: (base: CSSObject, props: MenuProps<T, any, any>): CSSObject => {
+    menu: (base: CSSObjectWithLabel, _props: MenuProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             background: theme`colors.neutral.900`,
@@ -140,22 +133,19 @@ export const SelectStyle: StylesConfig<T, any, any> = {
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    menuList: (base: CSSObject, props: MenuListComponentProps<T, any, any>): CSSObject => {
+    menuList: (base: CSSObjectWithLabel, _props: MenuListProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    menuPortal: (base: CSSObject, props: MenuPortalProps<T, any, any>): CSSObject => {
+    menuPortal: (base: CSSObjectWithLabel, _props): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    multiValue: (base: CSSObject, props: MultiValueProps<T, any>): CSSObject => {
+    multiValue: (base: CSSObjectWithLabel, _props: MultiValueProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             background: theme`colors.neutral.900`,
@@ -163,30 +153,26 @@ export const SelectStyle: StylesConfig<T, any, any> = {
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    multiValueLabel: (base: CSSObject, props: MultiValueProps<T, any>): CSSObject => {
+    multiValueLabel: (base: CSSObjectWithLabel, _props: MultiValueProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             color: theme`colors.neutral.200`,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    multiValueRemove: (base: CSSObject, props: MultiValueRemoveProps<T, any>): CSSObject => {
+    multiValueRemove: (base: CSSObjectWithLabel, _props: MultiValueRemoveProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    noOptionsMessage: (base: CSSObject, props: NoticeProps<T, any, any>): CSSObject => {
+    noOptionsMessage: (base: CSSObjectWithLabel, _props: NoticeProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    option: (base: CSSObject, props: OptionProps<T, any, any>): CSSObject => {
+    option: (base: CSSObjectWithLabel, _props: OptionProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             background: theme`colors.neutral.900`,
@@ -198,8 +184,7 @@ export const SelectStyle: StylesConfig<T, any, any> = {
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    placeholder: (base: CSSObject, props: PlaceholderProps<T, any, any>): CSSObject => {
+    placeholder: (base: CSSObjectWithLabel, _props: PlaceholderProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
             color: theme`colors.neutral.300`,
@@ -207,16 +192,14 @@ export const SelectStyle: StylesConfig<T, any, any> = {
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    singleValue: (base: CSSObject, props: SingleValueProps<T, any>): CSSObject => {
+    singleValue: (base: CSSObjectWithLabel, _props: SingleValueProps<T, any>): CSSObjectWithLabel => {
         return {
             ...base,
             color: '#00000',
         };
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    valueContainer: (base: CSSObject, props: ValueContainerProps<T, any>): CSSObject => {
+    valueContainer: (base: CSSObjectWithLabel, _props: ValueContainerProps<T, any, any>): CSSObjectWithLabel => {
         return {
             ...base,
         };
@@ -243,7 +226,7 @@ interface SelectFieldProps {
 
     isCreatable?: boolean;
     isValidNewOption?:
-        | ((inputValue: string, value: ValueType<any, boolean>, options: ReadonlyArray<any>) => boolean)
+        | ((inputValue: string, value: OnChangeValue<any, boolean>, options: ReadonlyArray<any>) => boolean)
         | undefined;
 
     className?: string;
