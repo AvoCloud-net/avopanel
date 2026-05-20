@@ -254,7 +254,7 @@ export default ({
                             <Link
                                 to={`/server/${server.id}`}
                                 className={
-                                    'font-semibold text-white text-sm hover:text-white/80 transition-colors duration-200 truncate max-w-xs'
+                                    'font-header font-semibold text-white text-base hover:text-white/80 transition-colors duration-200 truncate max-w-xs'
                                 }
                             >
                                 {server.name}

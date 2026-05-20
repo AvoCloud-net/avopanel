@@ -25,6 +25,7 @@ interface Values {
 function LoginContainer() {
     const ref = useRef<Reaptcha>(null);
     const token = useRef('');
+    const pendingOauth = useRef<string | null>(null);
 
     const appName = useStoreState(state => state.settings.data!.name);
     const modules = useStoreState(state => state.everest.data!.auth.modules);
@@ -39,17 +40,7 @@ function LoginContainer() {
         clearFlashes();
     }, []);
 
-    const useOauth = (name: string) => {
-        if (recaptchaEnabled && !token.current) {
-            ref.current!.execute().catch(error => {
-                console.error(error);
-
-                clearAndAddHttpError({ error });
-            });
-
-            return;
-        }
-
+    const runOauth = (name: string) => {
         externalLogin(name, token.current)
             .then(url => {
                 // @ts-expect-error this is fine
@@ -58,8 +49,26 @@ function LoginContainer() {
             .catch(error => clearAndAddHttpError({ key: 'auth:register', error }));
     };
 
+    const useOauth = (name: string) => {
+        clearFlashes();
+        if (recaptchaEnabled && !token.current) {
+            pendingOauth.current = name;
+            ref.current!.execute().catch(error => {
+                pendingOauth.current = null;
+                console.error(error);
+
+                clearAndAddHttpError({ error });
+            });
+
+            return;
+        }
+
+        runOauth(name);
+    };
+
     const onSubmit = (values: Values, { setSubmitting }: FormikHelpers<Values>) => {
         clearFlashes();
+        pendingOauth.current = null;
 
         // If there is no token in the state yet, request the token and then abort this submit request
         // since it will be re-submitted when the recaptcha data is returned by the component.
@@ -151,7 +160,13 @@ function LoginContainer() {
                             sitekey={siteKey || '_invalid_key'}
                             onVerify={response => {
                                 token.current = response;
-                                submitForm();
+                                if (pendingOauth.current) {
+                                    const provider = pendingOauth.current;
+                                    pendingOauth.current = null;
+                                    runOauth(provider);
+                                } else {
+                                    submitForm();
+                                }
                             }}
                             onExpire={() => {
                                 setSubmitting(false);

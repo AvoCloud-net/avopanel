@@ -37,9 +37,18 @@ class ResourceUtilizationController extends ClientApiController
         if (!is_array($stats)) {
             $this->cache->forget($key);
             $stats = $this->repository->setServer($server)->getDetails();
+            if (!is_array($stats)) {
+                $stats = [
+                    'state' => 'offline',
+                    'is_suspended' => false,
+                    'utilization' => [],
+                ];
+            }
             $this->cache->put($key, $stats, Carbon::now()->addSeconds(20));
         }
 
-        return $this->transform($stats, StatsTransformer::class);
+        return $this->fractal->item($stats)
+            ->transformWith(new StatsTransformer())
+            ->toArray();
     }
 }

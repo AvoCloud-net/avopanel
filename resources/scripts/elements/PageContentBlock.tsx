@@ -26,7 +26,7 @@ function PageContentBlock({ title, header, description, showFlashKey, className,
             <ContentContainer css={tw`my-4 sm:my-10`} className={className}>
                 {showFlashKey && <FlashMessageRender byKey={showFlashKey} css={tw`mb-4`} />}
                 {header && (
-                    <div className={'text-3xl lg:text-5xl font-bold mt-8 mb-12'}>
+                    <div className={'text-3xl lg:text-5xl font-bold font-header tracking-tight mt-8 mb-12'}>
                         {title}
                         {description && <p className={'text-gray-400 font-normal text-sm mt-1'}>{description}</p>}
                     </div>
@@ -36,7 +36,7 @@ function PageContentBlock({ title, header, description, showFlashKey, className,
 
             <ContentContainer css={tw`mb-4`}>
                 <p css={tw`text-center text-neutral-500 text-xs`}>
-                    Powered by&nbsp;
+                    Based on&nbsp;
                     <a
                         rel={'noopener nofollow noreferrer'}
                         href={'https://jexpanel.com'}
@@ -44,6 +44,15 @@ function PageContentBlock({ title, header, description, showFlashKey, className,
                         css={tw`no-underline text-neutral-500 hover:text-neutral-300`}
                     >
                         Jexpanel.com
+                    </a>
+                    &nbsp;· Continued by&nbsp;
+                    <a
+                        rel={'noopener nofollow noreferrer'}
+                        href={'https://avocloud.net'}
+                        target={'_blank'}
+                        css={tw`no-underline text-neutral-500 hover:text-neutral-300`}
+                    >
+                        avocloud.net
                     </a>
                 </p>
             </ContentContainer>
