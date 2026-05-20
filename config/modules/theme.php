@@ -12,11 +12,12 @@ return [
     |
     */
     'colors' => [
-        'primary' => env('THEME_COLORS_PRIMARY', '#16a34a'),
-        'secondary' => env('THEME_COLORS_SECONDARY', '#27272a'),
+        // AvoCloud brand defaults — purple primary, near-black surfaces.
+        'primary' => env('THEME_COLORS_PRIMARY', '#9333ea'),
+        'secondary' => env('THEME_COLORS_SECONDARY', '#1a1a1a'),
 
-        'background' => env('THEME_COLORS_BACKGROUND', '#141414'),
-        'headers' => env('THEME_COLORS_HEADERS', '#171717'),
-        'sidebar' => env('THEME_COLORS_SIDEBAR', '#18181b'),
+        'background' => env('THEME_COLORS_BACKGROUND', '#0a0a0a'),
+        'headers' => env('THEME_COLORS_HEADERS', '#141414'),
+        'sidebar' => env('THEME_COLORS_SIDEBAR', '#0f0f10'),
     ],
 ];

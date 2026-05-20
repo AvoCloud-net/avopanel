@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ===== AvoCloud brand layer =====
+ * Body uses Quicksand, headings use Syne — matches avocloud.net.
+ * Selection + scrollbar tinted toward the purple primary.
+ */
+@layer base {
+    html, body {
+        font-family: 'Quicksand', system-ui, sans-serif;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: 'Syne', system-ui, sans-serif;
+        letter-spacing: -0.01em;
+    }
+
+    ::selection {
+        background-color: rgba(147, 51, 234, 0.35);
+        color: #fff;
+    }
+
+    /* Subtle purple-tinted scrollbar (WebKit only — graceful in others) */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0a0a0a;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #2a2a2e;
+        border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #9333ea;
+    }
+}

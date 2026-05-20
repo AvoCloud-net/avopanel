@@ -5,17 +5,26 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                header: ['"IBM Plex Sans"', '"Roboto"', 'system-ui', 'sans-serif'],
+                header: ['"Syne"', 'system-ui', 'sans-serif'],
+                sans: ['"Quicksand"', 'system-ui', 'sans-serif'],
+                mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
             },
             colors: {
-                black: '#09090b',
+                black: '#0a0a0a',
                 slate: colors.slate,
-                // "primary" and "neutral" are deprecated, prefer the use of "blue" and "gray"
-                // in new code.
-                primary: colors.green,
+                // AvoCloud brand — purple primary, pink secondary, yellow accent.
+                // "primary" and "neutral" are deprecated in upstream code; new code
+                // should use `avo-*` aliases or Tailwind's purple/pink/yellow scales.
+                primary: colors.purple,
                 neutral: colors.slate,
                 cyan: colors.cyan,
                 zinc: colors.zinc,
+                avo: {
+                    purple: '#9333ea',
+                    pink: '#ec4899',
+                    yellow: '#eab308',
+                    bg: '#0a0a0a',
+                },
             },
             fontSize: {
                 '2xs': '0.625rem',

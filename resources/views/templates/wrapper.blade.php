@@ -16,7 +16,7 @@
             <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#bc6e3c">
             <link rel="shortcut icon" href="/favicons/favicon.ico">
             <meta name="msapplication-config" content="/favicons/browserconfig.xml">
-            <meta name="theme-color" content="#0e4688">
+            <meta name="theme-color" content="#0a0a0a">
         @show
 
         @section('user-data')
@@ -41,12 +41,35 @@
                 </script>
             @endif
         @show
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <style>
-            @import url('//fonts.googleapis.com/css?family=Rubik:300,400,500&display=swap');
-            @import url('//fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans:500&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Quicksand:wght@300..700&family=IBM+Plex+Mono&display=swap');
 
             body {
-                background-color: {{ $themeConfiguration['colors']['background'] }}
+                background-color: {{ $themeConfiguration['colors']['background'] }};
+                font-family: 'Quicksand', system-ui, sans-serif;
+            }
+
+            /* AvoCloud gradient accent bar (top edge) */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #9333ea, #ec4899, #eab308, #9333ea);
+                background-size: 300% 100%;
+                z-index: 9999;
+                animation: avocloud-gradient 8s ease infinite;
+                pointer-events: none;
+            }
+
+            @keyframes avocloud-gradient {
+                0%   { background-position: 0% 50%; }
+                50%  { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
             }
         </style>
 
