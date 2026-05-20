@@ -25,6 +25,10 @@ import { Category } from '@definitions/admin';
 import { CategoryValues } from '@/api/routes/admin/billing/types';
 import { useSWRConfig } from 'swr';
 
+interface CategoryFormValues extends CategoryValues {
+    environment: Record<string, unknown>;
+}
+
 interface Props {
     visible: boolean;
     category?: Category;
@@ -33,7 +37,7 @@ interface Props {
 
 function InternalForm({ category, visible, setVisible }: Props) {
     const [_egg, setEgg] = useState<WithRelationships<Egg, 'variables'> | undefined>();
-    const { values, isSubmitting } = useFormikContext<CategoryValues>();
+    const { values, isSubmitting } = useFormikContext<CategoryFormValues>();
     const { secondary } = useStoreState(state => state.theme.data!.colors);
 
     // Load egg object when category.eggId changes (after save/SWR revalidation)
@@ -136,7 +140,7 @@ export default ({ category }: { category?: Category }) => {
         (actions: Actions<ApplicationStore>) => actions.flashes,
     );
 
-    const submit = (values: CategoryValues, { setSubmitting }: FormikHelpers<CategoryValues>) => {
+    const submit = (values: CategoryFormValues, { setSubmitting }: FormikHelpers<CategoryFormValues>) => {
         clearFlashes('admin:billing:category:create');
 
         values.visible = visible;
@@ -150,7 +154,7 @@ export default ({ category }: { category?: Category }) => {
             .then(() => setSubmitting(false));
     };
 
-    const update = (values: CategoryValues, { setSubmitting }: FormikHelpers<CategoryValues>) => {
+    const update = (values: CategoryFormValues, { setSubmitting }: FormikHelpers<CategoryFormValues>) => {
         clearFlashes();
 
         values.visible = visible;
@@ -185,7 +189,7 @@ export default ({ category }: { category?: Category }) => {
                     </p>
                 </div>
             </div>
-            <Formik
+            <Formik<CategoryFormValues>
                 onSubmit={category ? update : submit}
                 enableReinitialize={true}
                 initialValues={{

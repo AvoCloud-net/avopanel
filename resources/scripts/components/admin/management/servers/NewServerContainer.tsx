@@ -75,7 +75,7 @@ function InternalForm() {
             <div className="grid grid-cols-2 gap-y-6 gap-x-8 mb-16">
                 <div className="grid grid-cols-1 gap-y-6 col-span-2 md:col-span-1">
                     <BaseSettingsBox>
-                        <NodeSelect node={node!} setNode={setNode} />
+                        <NodeSelect node={node ?? null} setNode={(value) => setNode(value ?? undefined)} />
                         <div className="xl:col-span-2 bg-neutral-800 border border-neutral-900 shadow-inner p-4 rounded">
                             <FormikSwitch
                                 name={'startOnCompletion'}
