@@ -34,6 +34,12 @@ class ResourceUtilizationController extends ClientApiController
             return $this->repository->setServer($server)->getDetails();
         });
 
+        if (!is_array($stats)) {
+            $this->cache->forget($key);
+            $stats = $this->repository->setServer($server)->getDetails();
+            $this->cache->put($key, $stats, Carbon::now()->addSeconds(20));
+        }
+
         return $this->transform($stats, StatsTransformer::class);
     }
 }
