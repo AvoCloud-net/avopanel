@@ -54,6 +54,8 @@ export default () => {
                     setLoading(false);
                     console.error(error);
                 });
+        } else {
+            setLoading(false);
         }
     }, []);
 

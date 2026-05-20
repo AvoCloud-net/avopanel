@@ -59,7 +59,7 @@ class FreeProductController extends ClientApiController
             $server = Server::findOrFail($request->input('server_id'));
             $order->assignServer($server);
 
-            if ($server->renewal_date->diffInDays(now()) <= 7) {
+            if ($server->renewal_date && $server->renewal_date->isFuture() && $server->renewal_date->diffInDays(now()) > 7) {
                 $order->delete();
 
                 throw new DisplayException('You cannot renew a free server more than 7 days in advance.');

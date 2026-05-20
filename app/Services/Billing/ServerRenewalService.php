@@ -20,7 +20,8 @@ class ServerRenewalService
             $this->suspensionService->toggle($server, SuspensionService::ACTION_UNSUSPEND);
         }
 
-        $date = $server->renewal_date
+        $base = $server->renewal_date ?? now();
+        $date = $base
             ->addDays(config('modules.billing.renewal.days'))
             ->toDateTimeString();
 
