@@ -1,19 +1,35 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
 
 return new class () extends Migration {
     /**
      * Run the migrations.
+     *
+     * Guarded with Schema::hasColumn checks so this migration is idempotent on
+     * schemas where the old column names (node, owner, allocation, service, option)
+     * have already been renamed (e.g. node_id, owner_id, …) and therefore no
+     * longer exist.
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE servers MODIFY node INT UNSIGNED');
-        DB::statement('ALTER TABLE servers MODIFY owner INT UNSIGNED');
-        DB::statement('ALTER TABLE servers MODIFY allocation INT UNSIGNED');
-        DB::statement('ALTER TABLE servers MODIFY service INT UNSIGNED');
-        DB::statement('ALTER TABLE servers MODIFY `option` INT UNSIGNED');
+        if (Schema::hasColumn('servers', 'node')) {
+            DB::statement('ALTER TABLE servers MODIFY node INT UNSIGNED');
+        }
+        if (Schema::hasColumn('servers', 'owner')) {
+            DB::statement('ALTER TABLE servers MODIFY owner INT UNSIGNED');
+        }
+        if (Schema::hasColumn('servers', 'allocation')) {
+            DB::statement('ALTER TABLE servers MODIFY allocation INT UNSIGNED');
+        }
+        if (Schema::hasColumn('servers', 'service')) {
+            DB::statement('ALTER TABLE servers MODIFY service INT UNSIGNED');
+        }
+        if (Schema::hasColumn('servers', 'option')) {
+            DB::statement('ALTER TABLE servers MODIFY `option` INT UNSIGNED');
+        }
     }
 
     /**
@@ -21,10 +37,20 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE servers MODIFY node INT');
-        DB::statement('ALTER TABLE servers MODIFY owner INT');
-        DB::statement('ALTER TABLE servers MODIFY allocation INT');
-        DB::statement('ALTER TABLE servers MODIFY service INT');
-        DB::statement('ALTER TABLE servers MODIFY `option` INT');
+        if (Schema::hasColumn('servers', 'node')) {
+            DB::statement('ALTER TABLE servers MODIFY node INT');
+        }
+        if (Schema::hasColumn('servers', 'owner')) {
+            DB::statement('ALTER TABLE servers MODIFY owner INT');
+        }
+        if (Schema::hasColumn('servers', 'allocation')) {
+            DB::statement('ALTER TABLE servers MODIFY allocation INT');
+        }
+        if (Schema::hasColumn('servers', 'service')) {
+            DB::statement('ALTER TABLE servers MODIFY service INT');
+        }
+        if (Schema::hasColumn('servers', 'option')) {
+            DB::statement('ALTER TABLE servers MODIFY `option` INT');
+        }
     }
 };
