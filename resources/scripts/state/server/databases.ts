@@ -1,5 +1,7 @@
 import { action, Action } from 'easy-peasy';
-import { ServerDatabase } from '@/api/routes/server/databases/getServerDatabases';
+import { Database } from '@definitions/server';
+
+export type ServerDatabase = Database;
 
 export interface ServerDatabaseStore {
     data: ServerDatabase[];
