@@ -3,7 +3,7 @@
 AvoPanel is the **AvoCloud fork** of [Jexpanel / Jexactyl](https://github.com/Jexactyl/Jexactyl) — same panel, with a bug-fix sweep on top. The procedure mirrors the [official Jexpanel upgrade docs](https://docs.jexpanel.com/docs/upgrade/) so you can follow the same muscle memory.
 
 Repository: `https://github.com/AvoCloud-net/avopanel`
-Branch: `fix/sweep-2026-05`
+Branch: `main`
 Tag (initial release): `v4.0.1-avopanel.1`
 
 ---
@@ -370,7 +370,7 @@ PHP-FPM didn't reload. `sudo systemctl reload php8.3-fpm` (adjust version) and c
 
 ### v4.0.1-avopanel.1 (2026-05-20)
 
-Initial AvoCloud fork release. Forked from Jexpanel `v4.0.1`. All commits live on branch `fix/sweep-2026-05`.
+Initial AvoCloud fork release. Forked from Jexpanel `v4.0.1`. All commits live on branch `main`.
 
 | Commit | Scope | Description |
 |---|---|---|
