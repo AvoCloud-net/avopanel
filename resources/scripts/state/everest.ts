@@ -53,6 +53,8 @@ export interface EverestSettings {
         renewal: {
             days: number;
             threshold: number;
+            free_suspension_days: number;
+            paid_suspension_days: number;
         };
         allow_upgrades: boolean;
     };

@@ -60,6 +60,8 @@ class EverestComposer
                 'renewal' => [
                     'days' => config('modules.billing.renewal.days'),
                     'threshold' => config('modules.billing.renewal.threshold'),
+                    'free_suspension_days' => config('modules.billing.renewal.free_suspension_days'),
+                    'paid_suspension_days' => config('modules.billing.renewal.paid_suspension_days'),
                 ],
                 'allow_upgrades' => config('modules.billing.allow_upgrades'),
             ],

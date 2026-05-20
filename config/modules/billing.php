@@ -35,6 +35,8 @@ return [
     'renewal' => [
         'days' => env('BILLING_RENEWAL_DAYS', 30),
         'threshold' => env('BILLING_RENEWAL_THRESHOLD', 7),
+        'free_suspension_days' => env('BILLING_FREE_SUSPENSION_DAYS', 7),
+        'paid_suspension_days' => env('BILLING_PAID_SUSPENSION_DAYS', 30),
     ],
 
     /*
