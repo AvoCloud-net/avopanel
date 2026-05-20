@@ -71,7 +71,8 @@ export default ({ expand, setExpand }: Props) => {
     const TERMINAL_PRELUDE = '\n\u001b[1m\u001b[33mEverest Container: \u001b[0m';
     const ref = useRef<HTMLDivElement>(null);
     const terminal = useMemo(() => new Terminal({ ...terminalProps, ...terminalInitOnlyProps }), []);
-    const fitAddon = new FitAddon();
+    const fitAddonRef = useRef<FitAddon>(new FitAddon());
+    const fitAddon = fitAddonRef.current;
     const searchAddon = new SearchAddon();
     const searchBar = new SearchBarAddon({ searchAddon });
     const webLinksAddon = new WebLinksAddon();
@@ -175,6 +176,39 @@ export default ({ expand, setExpand }: Props) => {
             }
         }, 100),
     );
+
+    // Re-fit when the terminal container changes size (tab switching, expand/collapse,
+    // sidebar toggles). requestAnimationFrame ensures the DOM has settled before fit runs,
+    // preventing blank gaps or text overflow at different viewport sizes (issue #421).
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        let rafId: number;
+        const observer = new ResizeObserver(() => {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                if (terminal.element) {
+                    fitAddon.fit();
+                }
+            });
+        });
+
+        observer.observe(el);
+
+        return () => {
+            cancelAnimationFrame(rafId);
+            observer.disconnect();
+        };
+    }, [terminal, fitAddon]);
+
+    // Re-fit explicitly when the expand prop toggles so the terminal fills its new
+    // min-height before ResizeObserver fires (avoids a one-frame blank strip).
+    useEffect(() => {
+        if (terminal.element) {
+            requestAnimationFrame(() => fitAddon.fit());
+        }
+    }, [expand]);
 
     useEffect(() => {
         const listeners: Record<string, (s: string) => void> = {
