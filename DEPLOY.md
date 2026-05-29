@@ -368,6 +368,18 @@ PHP-FPM didn't reload. `sudo systemctl reload php8.3-fpm` (adjust version) and c
 
 ## 8. Changelog
 
+### v4.0.1-avopanel.2 (2026-05-29)
+
+AvoCloud brand v1.0.0 rollout — replaces the interim purple/pink/yellow
+palette with the locked **mono-first + coral** system.
+
+| Commit | Scope | Description |
+|---|---|---|
+| `477dc5757` | theme | coral `primary-*` ramp (#FF6B4A / #C73D20), mono surfaces (#0B0B0B / #131313), coral accent bar + scrollbar + selection |
+| `477dc5757` | branding | bracket-prompt logo mark; favicon / PWA / MS-tile icon kit swapped; in-app logo fallback → `/avocloud-mark.svg` |
+
+Fonts (Syne / Quicksand / IBM Plex Mono) unchanged. CI gates: `tsc --noEmit` 0 errors, `eslint` clean, `vite build` green.
+
 ### v4.0.1-avopanel.1 (2026-05-20)
 
 Initial AvoCloud fork release. Forked from Jexpanel `v4.0.1`. All commits live on branch `main`.
