@@ -10,20 +10,32 @@ module.exports = {
                 mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
             },
             colors: {
-                black: '#0a0a0a',
+                black: '#0B0B0B',
                 slate: colors.slate,
-                // AvoCloud brand — purple primary, pink secondary, yellow accent.
-                // "primary" and "neutral" are deprecated in upstream code; new code
-                // should use `avo-*` aliases or Tailwind's purple/pink/yellow scales.
-                primary: colors.purple,
+                // AvoCloud brand v1.0.0 — mono-first + coral accent.
+                // `primary-*` utilities resolve to the coral ramp (500 = #FF6B4A,
+                // the dark-mode primary used across the panel's dark UI).
+                primary: {
+                    50: '#FFF1ED',
+                    100: '#FFE0D6',
+                    200: '#FFC2AE',
+                    300: '#FF9379',
+                    400: '#FF7A5C',
+                    500: '#FF6B4A',
+                    600: '#ED5333',
+                    700: '#C73D20',
+                    800: '#A32E18',
+                    900: '#7D2614',
+                    950: '#45110A',
+                },
                 neutral: colors.slate,
                 cyan: colors.cyan,
                 zinc: colors.zinc,
                 avo: {
-                    purple: '#9333ea',
-                    pink: '#ec4899',
-                    yellow: '#eab308',
-                    bg: '#0a0a0a',
+                    coral: '#FF6B4A',
+                    'coral-soft': '#FF9379',
+                    'coral-deep': '#C73D20',
+                    bg: '#0B0B0B',
                 },
             },
             fontSize: {

@@ -64,11 +64,7 @@ function DashboardRouter() {
                     {!collapsed ? (
                         <h1 className={'text-2xl text-neutral-50 whitespace-nowrap font-medium'}>{name}</h1>
                     ) : (
-                        <img
-                            src={logo?.toString() || 'https://avatars.githubusercontent.com/u/91636558'}
-                            className={'mt-4 w-12'}
-                            alt={'Logo'}
-                        />
+                        <img src={logo?.toString() || '/avocloud-mark.svg'} className={'mt-4 w-12'} alt={'Logo'} />
                     )}
                 </div>
                 <Sidebar.Wrapper theme={theme}>

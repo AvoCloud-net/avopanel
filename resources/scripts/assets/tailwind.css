@@ -4,7 +4,7 @@
 
 /* ===== AvoCloud brand layer =====
  * Body uses Quicksand, headings use Syne — matches avocloud.net.
- * Selection + scrollbar tinted toward the purple primary.
+ * Selection + scrollbar tinted toward the coral primary.
  */
 @layer base {
     html, body {
@@ -17,23 +17,23 @@
     }
 
     ::selection {
-        background-color: rgba(147, 51, 234, 0.35);
+        background-color: rgba(255, 107, 74, 0.35);
         color: #fff;
     }
 
-    /* Subtle purple-tinted scrollbar (WebKit only — graceful in others) */
+    /* Subtle coral-tinted scrollbar (WebKit only — graceful in others) */
     ::-webkit-scrollbar {
         width: 10px;
         height: 10px;
     }
     ::-webkit-scrollbar-track {
-        background: #0a0a0a;
+        background: #0B0B0B;
     }
     ::-webkit-scrollbar-thumb {
         background: #2a2a2e;
         border-radius: 8px;
     }
     ::-webkit-scrollbar-thumb:hover {
-        background: #9333ea;
+        background: #FF6B4A;
     }
 }

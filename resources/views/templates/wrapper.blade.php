@@ -13,10 +13,10 @@
             <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
             <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
             <link rel="manifest" href="/favicons/manifest.json">
-            <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#bc6e3c">
+            <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#FF6B4A">
             <link rel="shortcut icon" href="/favicons/favicon.ico">
             <meta name="msapplication-config" content="/favicons/browserconfig.xml">
-            <meta name="theme-color" content="#0a0a0a">
+            <meta name="theme-color" content="#0B0B0B">
         @show
 
         @section('user-data')
@@ -51,7 +51,7 @@
                 font-family: 'Quicksand', system-ui, sans-serif;
             }
 
-            /* AvoCloud gradient accent bar (top edge) */
+            /* AvoCloud coral accent bar (top edge) */
             body::before {
                 content: '';
                 position: fixed;
@@ -59,7 +59,7 @@
                 left: 0;
                 right: 0;
                 height: 3px;
-                background: linear-gradient(90deg, #9333ea, #ec4899, #eab308, #9333ea);
+                background: linear-gradient(90deg, #FF6B4A, #ED5333, #C73D20, #FF6B4A);
                 background-size: 300% 100%;
                 z-index: 9999;
                 animation: avocloud-gradient 8s ease infinite;
